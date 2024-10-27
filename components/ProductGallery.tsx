@@ -1,11 +1,28 @@
+"use client";
+
 import React, { useState } from 'react';
 import { ShoppingCart, RotateCw } from 'lucide-react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 
+// Define TypeScript interfaces
+interface ProductImages {
+  front: string;
+  back: string;
+}
+
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  images?: ProductImages;
+  image?: string;
+  hasMultipleViews?: boolean;
+}
+
 const ProductGallery = () => {
   const [showHoodieBack, setShowHoodieBack] = useState(false);
 
-  const products = [
+  const products: Product[] = [
     {
       id: 1,
       name: "DCDC Hoodie",
@@ -58,6 +75,13 @@ const ProductGallery = () => {
     setShowHoodieBack(!showHoodieBack);
   };
 
+  const getProductImage = (product: Product): string => {
+    if (product.id === 1 && product.images) {
+      return showHoodieBack ? product.images.back : product.images.front;
+    }
+    return product.image || '';
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation Bar */}
@@ -104,9 +128,7 @@ const ProductGallery = () => {
             >
               <CardContent className="p-4 relative">
                 <img
-                  src={product.id === 1 ? 
-                    (showHoodieBack ? product.images.back : product.images.front) : 
-                    product.image}
+                  src={getProductImage(product)}
                   alt={product.name}
                   className="w-full h-64 object-cover rounded-lg"
                 />
