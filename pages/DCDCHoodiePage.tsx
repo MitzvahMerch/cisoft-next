@@ -9,8 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 const DCDCHoodiePage = () => {
   const [showBackView, setShowBackView] = useState(false);
   const [total, setTotal] = useState(0);
-  
-  // Size input fields state
+
   const [sizes, setSizes] = useState({
     ym: 0,
     yl: 0,
@@ -20,12 +19,11 @@ const DCDCHoodiePage = () => {
     xl: 0,
   });
 
-  const updateSize = (size: string, value: string) => {
+  const updateSize = (size, value) => {
     const newValue = value === '' ? 0 : parseInt(value);
     const newSizes = { ...sizes, [size]: newValue };
     setSizes(newSizes);
-    
-    // Calculate new total
+
     const newTotal = Object.values(newSizes).reduce((sum, current) => sum + current, 0);
     setTotal(newTotal);
   };
@@ -55,15 +53,13 @@ const DCDCHoodiePage = () => {
                 />
               </Link>
             </div>
-            
+
             <div className="hidden md:block">
-              <div className="flex items-center">
-                <Link href="/" className="text-2xl font-bold text-black hover:text-gray-700 transition-colors">
-                  DCDC Fundraiser Store
-                </Link>
-              </div>
+              <Link href="/" className="text-2xl font-bold text-black hover:text-gray-700">
+                DCDC Fundraiser Store
+              </Link>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <Image
                 src="/images/PILogo.png"
@@ -86,7 +82,7 @@ const DCDCHoodiePage = () => {
           {/* Left Column - Product Image */}
           <Card className="bg-white overflow-hidden">
             <CardContent className="p-0">
-              <div className="aspect-[3/4] relative bg-white">
+              <div className="aspect-[3/4] relative">
                 <Image
                   src={showBackView ? "/images/WhiteSweatshirtBack.png" : "/images/WhiteSweatshirtFront.png"}
                   alt="DCDC Hoodie"
@@ -111,72 +107,19 @@ const DCDCHoodiePage = () => {
 
               {/* Size Grid */}
               <div className="grid grid-cols-2 gap-4 mb-8">
-                <div>
-                  <label className="block text-sm font-medium mb-2">YM</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={sizes.ym || ''}
-                    onChange={(e) => updateSize('ym', e.target.value)}
-                    className="w-full p-2 border rounded-md"
-                    placeholder="0"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">YL</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={sizes.yl || ''}
-                    onChange={(e) => updateSize('yl', e.target.value)}
-                    className="w-full p-2 border rounded-md"
-                    placeholder="0"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">S</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={sizes.s || ''}
-                    onChange={(e) => updateSize('s', e.target.value)}
-                    className="w-full p-2 border rounded-md"
-                    placeholder="0"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">M</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={sizes.m || ''}
-                    onChange={(e) => updateSize('m', e.target.value)}
-                    className="w-full p-2 border rounded-md"
-                    placeholder="0"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">L</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={sizes.l || ''}
-                    onChange={(e) => updateSize('l', e.target.value)}
-                    className="w-full p-2 border rounded-md"
-                    placeholder="0"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">XL</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={sizes.xl || ''}
-                    onChange={(e) => updateSize('xl', e.target.value)}
-                    className="w-full p-2 border rounded-md"
-                    placeholder="0"
-                  />
-                </div>
+                {Object.keys(sizes).map((sizeKey) => (
+                  <div key={sizeKey}>
+                    <label className="block text-sm font-medium mb-2">{sizeKey.toUpperCase()}</label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={sizes[sizeKey] || ''}
+                      onChange={(e) => updateSize(sizeKey, e.target.value)}
+                      className="w-full p-2 border rounded-md"
+                      placeholder="0"
+                    />
+                  </div>
+                ))}
               </div>
 
               {/* Total */}
@@ -193,7 +136,7 @@ const DCDCHoodiePage = () => {
               {/* Add to Cart Button */}
               <button
                 onClick={addToCart}
-                className="w-full p-4 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 font-medium"
+                className="w-full p-4 bg-black text-white rounded-lg hover:bg-gray-800 flex items-center justify-center gap-2 font-medium"
               >
                 <ShoppingCart className="h-5 w-5" />
                 Add to Cart
@@ -203,8 +146,8 @@ const DCDCHoodiePage = () => {
         </div>
 
         {/* Product Description */}
-        <div className="mt-8 text-sm text-gray-600">
-          <p>*Logo Placements are approximate and non-final. An art approval will be sent within 1 business day of order.</p>
+        <div className="mt-8 text-sm text-gray-600 text-center">
+          <p>*Logo placements are approximate. An art approval will be sent within 1 business day of order.</p>
         </div>
       </div>
     </div>
