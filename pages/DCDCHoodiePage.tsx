@@ -50,18 +50,20 @@ const DCDCHoodiePage = () => {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#DAC2A8' }}>
-      <nav className="bg-white shadow-sm">
+    <div className="min-h-screen bg-[#DAC2A8]">
+      <nav className="bg-white shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-24">
             <div className="w-1/4">
-              <Image
-                src="/images/DcDcLogo.png"
-                alt="DCDC Logo"
-                width={64}
-                height={64}
-                className="object-contain"
-              />
+              <Link href="/">
+                <Image
+                  src="/images/DcDcLogo.png"
+                  alt="DCDC Logo"
+                  width={64}
+                  height={64}
+                  className="object-contain cursor-pointer"
+                />
+              </Link>
             </div>
             
             <div className="absolute left-1/2 transform -translate-x-1/2">
@@ -86,103 +88,112 @@ const DCDCHoodiePage = () => {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Product Image */}
-          <div className="relative">
-            <Card className="bg-white">
-              <CardContent className="p-4">
-                <div className="relative w-full h-[600px]">
-                  <Image
-                    src={showBackView ? "/images/WhiteSweatshirtBack.png" : "/images/WhiteSweatshirtFront.png"}
-                    alt="DCDC Hoodie"
-                    fill
-                    className="object-contain"
-                  />
-                  <button
-                    onClick={() => setShowBackView(!showBackView)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-md hover:shadow-lg transition-all duration-200"
-                    title={showBackView ? "Show Front" : "Show Back"}
-                  >
-                    <RotateCw className="h-5 w-5 text-black" />
-                  </button>
-                </div>
-              </CardContent>
-            </Card>
+      <main className="max-w-6xl mx-auto px-4 py-12">
+        <div className="bg-white rounded-lg shadow-lg p-8">
+          {/* Product Header for Mobile */}
+          <div className="md:hidden mb-6">
+            <h1 className="text-3xl font-bold text-black mb-2">DCDC Hoodie</h1>
+            <p className="text-2xl font-bold text-black">$34.99</p>
           </div>
 
-          {/* Product Details */}
-          <div>
-            <Card className="bg-white">
-              <CardContent className="p-6">
-                <h1 className="text-3xl font-bold text-black mb-4">DCDC Hoodie</h1>
-                <p className="text-2xl font-bold text-black mb-6">$34.99</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            {/* Product Image */}
+            <div className="relative">
+              <Card className="bg-white shadow-none">
+                <CardContent className="p-0">
+                  <div className="relative w-full h-[500px] bg-gray-50 rounded-lg">
+                    <Image
+                      src={showBackView ? "/images/WhiteSweatshirtBack.png" : "/images/WhiteSweatshirtFront.png"}
+                      alt="DCDC Hoodie"
+                      fill
+                      className="object-contain p-4"
+                    />
+                    <button
+                      onClick={() => setShowBackView(!showBackView)}
+                      className="absolute right-4 bottom-4 bg-white hover:bg-gray-100 p-2 rounded-full shadow-md hover:shadow-lg transition-all duration-200"
+                      title={showBackView ? "Show Front" : "Show Back"}
+                    >
+                      <RotateCw className="h-5 w-5 text-black" />
+                    </button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
-                {/* Size Selection */}
-                <div className="space-y-4">
-                  {selectedSizes.map((sizeObj, index) => (
-                    <div key={index} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                      <select
-                        value={sizeObj.size}
-                        onChange={(e) => updateSize(index, e.target.value)}
-                        className="p-2 border rounded-md"
-                      >
-                        {sizes.map((size) => (
-                          <option key={size} value={size}>{size}</option>
-                        ))}
-                      </select>
-                      
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => updateQuantity(index, -1)}
-                          className="p-1 rounded-full hover:bg-gray-200"
-                        >
-                          <Minus className="h-4 w-4" />
-                        </button>
-                        <span className="w-8 text-center">{sizeObj.quantity}</span>
-                        <button
-                          onClick={() => updateQuantity(index, 1)}
-                          className="p-1 rounded-full hover:bg-gray-200"
-                        >
-                          <Plus className="h-4 w-4" />
-                        </button>
-                      </div>
+            {/* Product Details */}
+            <div>
+              {/* Product Header for Desktop */}
+              <div className="hidden md:block mb-8">
+                <h1 className="text-4xl font-bold text-black mb-2">DCDC Hoodie</h1>
+                <p className="text-3xl font-bold text-black">$34.99</p>
+              </div>
 
+              <div className="space-y-6">
+                {selectedSizes.map((sizeObj, index) => (
+                  <div 
+                    key={index} 
+                    className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200"
+                  >
+                    <select
+                      value={sizeObj.size}
+                      onChange={(e) => updateSize(index, e.target.value)}
+                      className="p-2 border rounded-md bg-white min-w-[100px]"
+                    >
+                      {sizes.map((size) => (
+                        <option key={size} value={size}>{size}</option>
+                      ))}
+                    </select>
+                    
+                    <div className="flex items-center gap-2 bg-white rounded-md border px-2">
                       <button
-                        onClick={() => removeSize(index)}
-                        className="ml-auto text-red-500 hover:text-red-700"
+                        onClick={() => updateQuantity(index, -1)}
+                        className="p-1 hover:bg-gray-100 rounded-full"
                       >
-                        Remove
+                        <Minus className="h-4 w-4" />
+                      </button>
+                      <span className="w-8 text-center font-medium">{sizeObj.quantity}</span>
+                      <button
+                        onClick={() => updateQuantity(index, 1)}
+                        className="p-1 hover:bg-gray-100 rounded-full"
+                      >
+                        <Plus className="h-4 w-4" />
                       </button>
                     </div>
-                  ))}
 
-                  <button
-                    onClick={addSize}
-                    className="w-full p-2 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
-                  >
-                    Add Size
-                  </button>
-                </div>
+                    <button
+                      onClick={() => removeSize(index)}
+                      className="ml-auto text-red-500 hover:text-red-700 font-medium"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+
+                <button
+                  onClick={addSize}
+                  className="w-full p-3 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors font-medium"
+                >
+                  Add Size
+                </button>
 
                 {selectedSizes.length > 0 && (
-                  <div className="mt-6">
-                    <div className="flex justify-between text-lg font-semibold mb-4">
+                  <div className="mt-8 pt-6 border-t border-gray-200">
+                    <div className="flex justify-between text-xl font-semibold mb-4">
                       <span>Total:</span>
                       <span>${calculateTotal().toFixed(2)}</span>
                     </div>
                     
                     <button
                       onClick={addToCart}
-                      className="w-full p-3 bg-black text-white rounded-md hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
+                      className="w-full p-4 bg-black text-white rounded-md hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 font-medium text-lg"
                     >
                       <ShoppingCart className="h-5 w-5" />
                       Add to Cart
                     </button>
                   </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
       </main>
