@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ShoppingCart, RotateCw } from 'lucide-react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 
@@ -16,11 +16,37 @@ interface Product {
   images?: ProductImages;
   image?: string;
   hasMultipleViews?: boolean;
-  imageScale?: string; // Add scale property for image zoom
+  imageScale?: string;
 }
 
 const ProductGallery = () => {
   const [showHoodieBack, setShowHoodieBack] = useState(false);
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0
+  });
+
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const endDate = new Date('2024-03-15T23:59:59').getTime();
+      const now = new Date().getTime();
+      const difference = endDate - now;
+
+      if (difference > 0) {
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60))
+        });
+      }
+    };
+
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 60000); // Update every minute
+
+    return () => clearInterval(timer);
+  }, []);
 
   const products: Product[] = [
     {
@@ -46,14 +72,14 @@ const ProductGallery = () => {
       name: "DCDC Dance Mom Crew",
       price: 34.99,
       image: "/images/DanceMomCrew.png",
-      imageScale: "50%"
+      imageScale: "70%"  // Adjusted zoom level
     },
     {
       id: 4,
       name: "DCDC Customizable Jersey",
       price: 34.99,
       image: "/images/JerseyExample.png",
-      imageScale: "30%"
+      imageScale: "60%"  // Adjusted zoom level
     },
     {
       id: 5,
@@ -66,7 +92,7 @@ const ProductGallery = () => {
       id: 6,
       name: "DCDC White Sweatpants",
       price: 34.99,
-      image: "/images/TeamDCDCWhite.png",
+      image: "/images/TeamDcDcWhite.png",  // Fixed image path
       imageScale: "100%"
     }
   ];
@@ -106,7 +132,7 @@ const ProductGallery = () => {
             
             <div className="w-1/4 flex justify-end items-center">
               <img
-                src="/images/PiLogo.png"
+                src="/images/PIlogo.png"  // Fixed image path
                 alt="PI Logo"
                 className="h-16 w-16 object-contain mr-4"
               />
@@ -157,6 +183,25 @@ const ProductGallery = () => {
               </CardFooter>
             </Card>
           ))}
+        </div>
+
+        {/* Countdown Timer */}
+        <div className="mt-12 mb-8 text-center bg-white/80 rounded-lg p-6 max-w-2xl mx-auto shadow-lg">
+          <h2 className="text-2xl font-bold text-black mb-4">Fundraiser Ends In:</h2>
+          <div className="flex justify-center gap-8">
+            <div className="text-center">
+              <span className="text-4xl font-bold text-black">{timeLeft.days}</span>
+              <p className="text-sm text-black">Days</p>
+            </div>
+            <div className="text-center">
+              <span className="text-4xl font-bold text-black">{timeLeft.hours}</span>
+              <p className="text-sm text-black">Hours</p>
+            </div>
+            <div className="text-center">
+              <span className="text-4xl font-bold text-black">{timeLeft.minutes}</span>
+              <p className="text-sm text-black">Minutes</p>
+            </div>
+          </div>
         </div>
       </main>
     </div>
