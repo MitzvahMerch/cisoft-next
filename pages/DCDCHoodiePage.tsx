@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { ShoppingCart, Minus, Plus, RotateCw } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import Link from 'next/link';
+import Image from 'next/image';
 
 const sizes = ['YS', 'YM', 'YL', 'S', 'M', 'L', 'XL', 'XXL'];
 
@@ -11,7 +13,7 @@ interface SizeQuantity {
   quantity: number;
 }
 
-const ProductPage = () => {
+const DCDCHoodiePage = () => {
   const [selectedSizes, setSelectedSizes] = useState<SizeQuantity[]>([]);
   const [showBackView, setShowBackView] = useState(false);
 
@@ -44,36 +46,37 @@ const ProductPage = () => {
   };
 
   const addToCart = () => {
-    // Implement cart functionality here
     console.log('Adding to cart:', selectedSizes);
-    // You would typically dispatch to a cart state manager here
   };
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#DAC2A8' }}>
-      {/* Navigation */}
       <nav className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-24">
             <div className="w-1/4">
-              <img
+              <Image
                 src="/images/DcDcLogo.png"
                 alt="DCDC Logo"
-                className="h-16 w-16 object-contain"
+                width={64}
+                height={64}
+                className="object-contain"
               />
             </div>
             
             <div className="absolute left-1/2 transform -translate-x-1/2">
-              <a href="/" className="text-2xl font-bold text-black text-center hover:text-gray-700 transition-colors">
+              <Link href="/" className="text-2xl font-bold text-black text-center hover:text-gray-700 transition-colors">
                 DCDC Fundraiser Store
-              </a>
+              </Link>
             </div>
             
             <div className="w-1/4 flex justify-end items-center">
-              <img
+              <Image
                 src="/images/PILogo.png"
                 alt="PI Logo"
-                className="h-16 w-16 object-contain mr-4"
+                width={64}
+                height={64}
+                className="object-contain mr-4"
               />
               <button className="p-2 rounded-full hover:bg-gray-100">
                 <ShoppingCart className="h-6 w-6 text-black" />
@@ -83,7 +86,6 @@ const ProductPage = () => {
         </div>
       </nav>
 
-      {/* Product Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Product Image */}
@@ -91,10 +93,11 @@ const ProductPage = () => {
             <Card className="bg-white">
               <CardContent className="p-4">
                 <div className="relative w-full h-[600px]">
-                  <img
+                  <Image
                     src={showBackView ? "/images/WhiteSweatshirtBack.png" : "/images/WhiteSweatshirtFront.png"}
                     alt="DCDC Hoodie"
-                    className="w-full h-full object-contain"
+                    fill
+                    className="object-contain"
                   />
                   <button
                     onClick={() => setShowBackView(!showBackView)}
@@ -187,4 +190,4 @@ const ProductPage = () => {
   );
 };
 
-export default ProductPage;
+export default DCDCHoodiePage;
