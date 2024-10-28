@@ -16,12 +16,12 @@ interface Product {
   images?: ProductImages;
   image?: string;
   hasMultipleViews?: boolean;
+  imageScale?: string; // Add scale property for image zoom
 }
 
 const ProductGallery = () => {
   const [showHoodieBack, setShowHoodieBack] = useState(false);
 
-  // Update paths to match exact file names from your Images folder
   const products: Product[] = [
     {
       id: 1,
@@ -31,37 +31,43 @@ const ProductGallery = () => {
         front: "/images/WhiteSweatshirtFront.png",
         back: "/images/WhiteSweatshirtBack.png"
       },
-      hasMultipleViews: true
+      hasMultipleViews: true,
+      imageScale: "50%"
     },
     {
       id: 2,
       name: "DCDC Black Sweatpants",
       price: 34.99,
       image: "/images/DcDcBlack.png",
+      imageScale: "100%"
     },
     {
       id: 3,
       name: "DCDC Dance Mom Crew",
       price: 34.99,
       image: "/images/DanceMomCrew.png",
+      imageScale: "50%"
     },
     {
       id: 4,
       name: "DCDC Customizable Jersey",
       price: 34.99,
       image: "/images/JerseyExample.png",
+      imageScale: "30%"
     },
     {
       id: 5,
       name: "Dance Mom White Sweatpants",
       price: 34.99,
       image: "/images/DanceMomSweats.png",
+      imageScale: "100%"
     },
     {
       id: 6,
       name: "DCDC White Sweatpants",
       price: 34.99,
-      image: "/images/TeamDcDcWhite.png",
+      image: "/images/TeamDCDCWhite.png",
+      imageScale: "100%"
     }
   ];
 
@@ -81,14 +87,8 @@ const ProductGallery = () => {
     return product.image || '';
   };
 
-  // Add error handling for images
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    console.error(`Failed to load image: ${e.currentTarget.src}`);
-    e.currentTarget.src = '/images/placeholder.png'; // You can add a placeholder image
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: '#DAC2A8' }}>
       <nav className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-24">
@@ -97,23 +97,21 @@ const ProductGallery = () => {
                 src="/images/DcDcLogo.png"
                 alt="DCDC Logo"
                 className="h-16 w-16 object-contain"
-                onError={handleImageError}
               />
             </div>
             
             <div className="absolute left-1/2 transform -translate-x-1/2">
-              <h1 className="text-2xl font-bold text-center">DCDC Fundraiser Store</h1>
+              <h1 className="text-2xl font-bold text-black text-center">DCDC Fundraiser Store</h1>
             </div>
             
             <div className="w-1/4 flex justify-end items-center">
               <img
-                src="/images/PILogo.png"
+                src="/images/PiLogo.png"
                 alt="PI Logo"
                 className="h-16 w-16 object-contain mr-4"
-                onError={handleImageError}
               />
               <button className="p-2 rounded-full hover:bg-gray-100">
-                <ShoppingCart className="h-6 w-6" />
+                <ShoppingCart className="h-6 w-6 text-black" />
               </button>
             </div>
           </div>
@@ -125,31 +123,37 @@ const ProductGallery = () => {
           {products.map((product) => (
             <Card 
               key={product.id} 
-              className="cursor-pointer hover:shadow-lg transition-shadow duration-200"
+              className="cursor-pointer hover:shadow-lg transition-shadow duration-200 bg-white"
               onClick={() => handleProductClick(product.id)}
             >
               <CardContent className="p-4 relative">
-                <img
-                  src={getProductImage(product)}
-                  alt={product.name}
-                  className="w-full h-64 object-cover rounded-lg"
-                  onError={handleImageError}
-                />
+                <div className="w-full h-64 relative overflow-hidden">
+                  <img
+                    src={getProductImage(product)}
+                    alt={product.name}
+                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                    style={{ 
+                      width: product.imageScale,
+                      objectFit: 'contain',
+                      maxHeight: '100%'
+                    }}
+                  />
+                </div>
                 {product.hasMultipleViews && (
                   <button
                     onClick={handleToggleImage}
                     className="absolute right-8 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-md hover:shadow-lg transition-all duration-200"
                     title={showHoodieBack ? "Show Front" : "Show Back"}
                   >
-                    <RotateCw className="h-5 w-5 text-gray-600" />
+                    <RotateCw className="h-5 w-5 text-black" />
                   </button>
                 )}
                 <div className="mt-4">
-                  <h2 className="text-lg font-semibold">{product.name}</h2>
+                  <h2 className="text-lg font-semibold text-black">{product.name}</h2>
                 </div>
               </CardContent>
-              <CardFooter className="px-4 py-3 bg-gray-50">
-                <p className="text-lg font-bold">${product.price.toFixed(2)}</p>
+              <CardFooter className="px-4 py-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}>
+                <p className="text-lg font-bold text-black">${product.price.toFixed(2)}</p>
               </CardFooter>
             </Card>
           ))}
