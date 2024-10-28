@@ -1,40 +1,55 @@
 import React from 'react';
 import Image from 'next/image';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 
-const ProductPage = () => {
+const ProductGallery = () => {
   return (
-    <div className="relative w-full min-h-screen bg-white">
-      {/* Product Title - Fixed Top Left */}
-      <div className="absolute top-8 left-8">
-        <h1 className="text-2xl font-bold">DCDC Hoodie</h1>
-      </div>
+    <div className="min-h-screen" style={{ backgroundColor: '#DAC2A8' }}>
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="grid grid-cols-2 gap-6">
+          {/* First Product Card */}
+          <Card className="bg-white">
+            <CardContent className="p-4 relative">
+              <div className="w-full h-64 relative">
+                <Image
+                  src="/images/WhiteSweatshirtFront.png"
+                  alt="DCDC Hoodie"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <div className="mt-4 text-center">
+                <h2 className="text-lg font-semibold text-black">DCDC Hoodie</h2>
+              </div>
+            </CardContent>
+            <CardFooter className="px-4 py-3 flex justify-center bg-white">
+              <p className="text-lg font-bold text-black">$34.99</p>
+            </CardFooter>
+          </Card>
 
-      {/* Product Controls - Fixed Top Left under title */}
-      <div className="absolute top-20 left-8 w-48">
-        <select className="w-32 border border-gray-300 rounded px-2 py-1 text-sm">
-          <option value="">Select Size</option>
-          <option>Small</option>
-          <option>Medium</option>
-          <option>Large</option>
-          <option>X-Large</option>
-        </select>
-        <button className="mt-2 px-4 py-1 bg-gray-200 text-sm rounded">
-          Add to Cart
-        </button>
-      </div>
-
-      {/* Product Image - Centered */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px]">
-        <Image
-          src="/images/WhiteSweatshirtFront.png"
-          alt="DCDC Hoodie Front"
-          fill
-          className="object-contain"
-          priority
-        />
+          {/* Second Product Card */}
+          <Card className="bg-white">
+            <CardContent className="p-4 relative">
+              <div className="w-full h-64 relative">
+                <Image
+                  src="/images/DcDcBlack.png"
+                  alt="DCDC Black Sweatpants"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <div className="mt-4 text-center">
+                <h2 className="text-lg font-semibold text-black">DCDC Black Sweatpants</h2>
+              </div>
+            </CardContent>
+            <CardFooter className="px-4 py-3 flex justify-center bg-white">
+              <p className="text-lg font-bold text-black">$34.99</p>
+            </CardFooter>
+          </Card>
+        </div>
       </div>
     </div>
   );
 };
 
-export default ProductPage;
+export default ProductGallery;
