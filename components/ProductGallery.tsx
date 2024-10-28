@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { ShoppingCart, RotateCw } from 'lucide-react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface ProductImages {
   front: string;
@@ -66,7 +67,7 @@ const ProductGallery = () => {
       },
       hasMultipleViews: true,
       imageScale: "50%",
-      slug: "dcdc-hoodie"
+      slug: "DCDCHoodiePage"
     },
     {
       id: 2,
@@ -129,10 +130,12 @@ const ProductGallery = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-24">
             <div className="w-1/4">
-              <img
+              <Image
                 src="/images/DcDcLogo.png"
                 alt="DCDC Logo"
-                className="h-16 w-16 object-contain"
+                width={64}
+                height={64}
+                className="object-contain"
               />
             </div>
             
@@ -143,10 +146,12 @@ const ProductGallery = () => {
             </div>
             
             <div className="w-1/4 flex justify-end items-center">
-              <img
+              <Image
                 src="/images/PILogo.png"
                 alt="PI Logo"
-                className="h-16 w-16 object-contain mr-4"
+                width={64}
+                height={64}
+                className="object-contain mr-4"
               />
               <button className="p-2 rounded-full hover:bg-gray-100">
                 <ShoppingCart className="h-6 w-6 text-black" />
@@ -159,18 +164,19 @@ const ProductGallery = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((product) => (
-            <Link href={`/product/${product.slug}`} key={product.id} className="block">
+            <Link href={`/pages/${product.slug}`} key={product.id} className="block">
               <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200 bg-white h-full">
                 <CardContent className="p-4 relative">
                   <div className="w-full h-64 relative overflow-hidden">
-                    <img
+                    <Image
                       src={getProductImage(product)}
                       alt={product.name}
-                      className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                      fill
+                      className="object-contain"
                       style={{ 
-                        width: product.imageScale,
                         objectFit: 'contain',
-                        maxHeight: '100%'
+                        maxHeight: '100%',
+                        width: product.imageScale
                       }}
                     />
                   </div>
