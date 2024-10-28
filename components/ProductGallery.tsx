@@ -28,8 +28,8 @@ const ProductGallery = () => {
       name: "DCDC Hoodie",
       price: 34.99,
       images: {
-        front: "/images/WhiteSweatshirtFront.png",
-        back: "/images/WhiteSweatshirtBack.png"
+        front: "/Images/WhiteSweatshirtFront.png",
+        back: "/Images/WhiteSweatshirtBack.png"
       },
       hasMultipleViews: true
     },
@@ -37,31 +37,31 @@ const ProductGallery = () => {
       id: 2,
       name: "DCDC Black Sweatpants",
       price: 34.99,
-      image: "/images/DcDcBlack.png",
+      image: "/Images/DcDcBlack.png",
     },
     {
       id: 3,
       name: "DCDC Dance Mom Crew",
       price: 34.99,
-      image: "/images/DanceMomCrew.png",
+      image: "/Images/DanceMomCrew.png",
     },
     {
       id: 4,
       name: "DCDC Customizable Jersey",
       price: 34.99,
-      image: "/images/JerseyExample.png",
+      image: "/Images/JerseyExample.png",
     },
     {
       id: 5,
       name: "Dance Mom White Sweatpants",
       price: 34.99,
-      image: "/images/DanceMomSweats.png",
+      image: "/Images/DanceMomSweats.png",
     },
     {
       id: 6,
       name: "DCDC White Sweatpants",
       price: 34.99,
-      image: "/images/TeamDCDCWhite.png",
+      image: "/Images/TeamDCDCWhite.png",
     }
   ];
 
@@ -91,7 +91,7 @@ const ProductGallery = () => {
             {/* Left Image */}
             <div className="w-1/4">
               <img
-                src="/images/DcDcLogo.png"
+                src="/Images/DcDcLogo.png"
                 alt="DCDC Logo"
                 className="h-16 w-16 object-contain"
               />
@@ -105,7 +105,7 @@ const ProductGallery = () => {
             {/* Right Section with Image and Cart */}
             <div className="w-1/4 flex justify-end items-center">
               <img
-                src="/images/PiLogo.png"
+                src="/Images/PiLogo.png"
                 alt="PI Logo"
                 className="h-16 w-16 object-contain mr-4"
               />
