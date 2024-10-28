@@ -61,7 +61,7 @@ const ProductGallery = () => {
       id: 6,
       name: "DCDC White Sweatpants",
       price: 34.99,
-      image: "/images/TeamDCDCWhite.png",
+      image: "/images/TeamDcDcWhite.png",
     }
   ];
 
@@ -107,7 +107,7 @@ const ProductGallery = () => {
             
             <div className="w-1/4 flex justify-end items-center">
               <img
-                src="/images/PiLogo.png"
+                src="/images/PILogo.png"
                 alt="PI Logo"
                 className="h-16 w-16 object-contain mr-4"
                 onError={handleImageError}
