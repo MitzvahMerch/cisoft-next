@@ -29,9 +29,9 @@ const ProductGallery = () => {
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      const endDate = new Date('2024-03-15T23:59:59').getTime();
-      const now = new Date().getTime();
-      const difference = endDate - now;
+      const endDate = new Date('2024-03-15T23:59:59');
+      const now = new Date();
+      const difference = endDate.getTime() - now.getTime();
 
       if (difference > 0) {
         setTimeLeft({
@@ -43,7 +43,7 @@ const ProductGallery = () => {
     };
 
     calculateTimeLeft();
-    const timer = setInterval(calculateTimeLeft, 60000); // Update every minute
+    const timer = setInterval(calculateTimeLeft, 1000); // Update every second
 
     return () => clearInterval(timer);
   }, []);
@@ -72,14 +72,14 @@ const ProductGallery = () => {
       name: "DCDC Dance Mom Crew",
       price: 34.99,
       image: "/images/DanceMomCrew.png",
-      imageScale: "70%"  // Adjusted zoom level
+      imageScale: "70%"
     },
     {
       id: 4,
       name: "DCDC Customizable Jersey",
       price: 34.99,
       image: "/images/JerseyExample.png",
-      imageScale: "60%"  // Adjusted zoom level
+      imageScale: "80%"  // Increased zoom level for jersey
     },
     {
       id: 5,
@@ -92,7 +92,7 @@ const ProductGallery = () => {
       id: 6,
       name: "DCDC White Sweatpants",
       price: 34.99,
-      image: "/images/TeamDcDcWhite.png",  // Fixed image path
+      image: "/images/TeamDcDcWhite.png",
       imageScale: "100%"
     }
   ];
@@ -132,7 +132,7 @@ const ProductGallery = () => {
             
             <div className="w-1/4 flex justify-end items-center">
               <img
-                src="/images/PIlogo.png"  // Fixed image path
+                src="/images/PILogo.png"  // Fixed image path
                 alt="PI Logo"
                 className="h-16 w-16 object-contain mr-4"
               />
@@ -178,7 +178,7 @@ const ProductGallery = () => {
                   <h2 className="text-lg font-semibold text-black">{product.name}</h2>
                 </div>
               </CardContent>
-              <CardFooter className="px-4 py-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}>
+              <CardFooter className="px-4 py-3 flex justify-center" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}>
                 <p className="text-lg font-bold text-black">${product.price.toFixed(2)}</p>
               </CardFooter>
             </Card>
@@ -186,20 +186,20 @@ const ProductGallery = () => {
         </div>
 
         {/* Countdown Timer */}
-        <div className="mt-12 mb-8 text-center bg-white/80 rounded-lg p-6 max-w-2xl mx-auto shadow-lg">
-          <h2 className="text-2xl font-bold text-black mb-4">Fundraiser Ends In:</h2>
-          <div className="flex justify-center gap-8">
+        <div className="mt-12 mb-8 text-center bg-white/90 rounded-lg p-6 max-w-md mx-auto shadow-lg">
+          <h2 className="text-xl font-bold text-black mb-4">Fundraiser Ends In:</h2>
+          <div className="flex justify-center gap-12">
             <div className="text-center">
-              <span className="text-4xl font-bold text-black">{timeLeft.days}</span>
-              <p className="text-sm text-black">Days</p>
+              <span className="text-5xl font-bold text-black">{String(timeLeft.days).padStart(2, '0')}</span>
+              <p className="text-sm text-black mt-1">Days</p>
             </div>
             <div className="text-center">
-              <span className="text-4xl font-bold text-black">{timeLeft.hours}</span>
-              <p className="text-sm text-black">Hours</p>
+              <span className="text-5xl font-bold text-black">{String(timeLeft.hours).padStart(2, '0')}</span>
+              <p className="text-sm text-black mt-1">Hours</p>
             </div>
             <div className="text-center">
-              <span className="text-4xl font-bold text-black">{timeLeft.minutes}</span>
-              <p className="text-sm text-black">Minutes</p>
+              <span className="text-5xl font-bold text-black">{String(timeLeft.minutes).padStart(2, '0')}</span>
+              <p className="text-sm text-black mt-1">Minutes</p>
             </div>
           </div>
         </div>
