@@ -6,11 +6,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 
-interface SizeQuantity {
-  size: string;
-  quantity: number;
-}
-
 const DCDCHoodiePage = () => {
   const [showBackView, setShowBackView] = useState(false);
   const [total, setTotal] = useState(0);
