@@ -28,8 +28,8 @@ const ProductGallery = () => {
       name: "DCDC Hoodie",
       price: 34.99,
       images: {
-        front: "/api/placeholder/300/400",
-        back: "/api/placeholder/300/400"
+        front: "/images/WhiteSweatshirtFront.png",
+        back: "/images/WhiteSweatshirtBack.png"
       },
       hasMultipleViews: true
     },
@@ -37,31 +37,31 @@ const ProductGallery = () => {
       id: 2,
       name: "DCDC Black Sweatpants",
       price: 34.99,
-      image: "/api/placeholder/300/400",
+      image: "/images/DcDcBlack.png",
     },
     {
       id: 3,
       name: "DCDC Dance Mom Crew",
       price: 34.99,
-      image: "/api/placeholder/300/400",
+      image: "/images/DanceMomCrew.png",
     },
     {
       id: 4,
       name: "DCDC Customizable Jersey",
       price: 34.99,
-      image: "/api/placeholder/300/400",
+      image: "/images/JerseyExample.png",
     },
     {
       id: 5,
       name: "Dance Mom White Sweatpants",
       price: 34.99,
-      image: "/api/placeholder/300/400",
+      image: "/images/DanceMomSweats.png",
     },
     {
       id: 6,
       name: "DCDC White Sweatpants",
       price: 34.99,
-      image: "/api/placeholder/300/400",
+      image: "/images/TeamDCDCWhite.png",
     }
   ];
 
@@ -91,8 +91,8 @@ const ProductGallery = () => {
             {/* Left Image */}
             <div className="w-1/4">
               <img
-                src="/api/placeholder/100/100"
-                alt="Left Logo"
+                src="/images/DcDcLogo.png"
+                alt="DCDC Logo"
                 className="h-16 w-16 object-contain"
               />
             </div>
@@ -105,8 +105,8 @@ const ProductGallery = () => {
             {/* Right Section with Image and Cart */}
             <div className="w-1/4 flex justify-end items-center">
               <img
-                src="/api/placeholder/100/100"
-                alt="Right Logo"
+                src="/images/PiLogo.png"
+                alt="PI Logo"
                 className="h-16 w-16 object-contain mr-4"
               />
               <button className="p-2 rounded-full hover:bg-gray-100">
