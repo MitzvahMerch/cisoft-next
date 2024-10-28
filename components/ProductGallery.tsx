@@ -163,42 +163,42 @@ const ProductGallery = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => (
-            <Link href={`/pages/${product.slug}`} key={product.id} className="block">
-              <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200 bg-white h-full">
-                <CardContent className="p-4 relative">
-                  <div className="w-full h-64 relative overflow-hidden">
-                    <Image
-                      src={getProductImage(product)}
-                      alt={product.name}
-                      fill
-                      className="object-contain"
-                      style={{ 
-                        objectFit: 'contain',
-                        maxHeight: '100%',
-                        width: product.imageScale
-                      }}
-                    />
-                  </div>
-                  {product.hasMultipleViews && (
-                    <button
-                      onClick={handleToggleImage}
-                      className="absolute right-8 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-md hover:shadow-lg transition-all duration-200"
-                      title={showHoodieBack ? "Show Front" : "Show Back"}
-                    >
-                      <RotateCw className="h-5 w-5 text-black" />
-                    </button>
-                  )}
-                  <div className="mt-4">
-                    <h2 className="text-lg font-semibold text-black hover:text-gray-700 transition-colors">{product.name}</h2>
-                  </div>
-                </CardContent>
-                <CardFooter className="px-4 py-3 flex justify-center" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}>
-                  <p className="text-lg font-bold text-black">${product.price.toFixed(2)}</p>
-                </CardFooter>
-              </Card>
-            </Link>
-          ))}
+        {products.map((product) => (
+  <Link href={`/${product.slug}`} key={product.id} className="block"> {/* Removed /pages/ from path */}
+    <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200 bg-white h-full flex flex-col">
+      <CardContent className="p-4 relative flex-grow flex flex-col items-center"> {/* Added flex and centering */}
+        <div className="w-full h-64 relative overflow-hidden flex items-center justify-center"> {/* Added flex centering */}
+          <Image
+            src={getProductImage(product)}
+            alt={product.name}
+            fill
+            className="object-contain"
+            style={{ 
+              objectFit: 'contain',
+              maxHeight: '100%',
+              width: product.imageScale
+            }}
+          />
+        </div>
+        {product.hasMultipleViews && (
+          <button
+            onClick={handleToggleImage}
+            className="absolute right-8 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-md hover:shadow-lg transition-all duration-200"
+            title={showHoodieBack ? "Show Front" : "Show Back"}
+          >
+            <RotateCw className="h-5 w-5 text-black" />
+          </button>
+        )}
+        <div className="mt-4 text-center w-full"> {/* Added text-center */}
+          <h2 className="text-lg font-semibold text-black hover:text-gray-700 transition-colors">{product.name}</h2>
+        </div>
+      </CardContent>
+      <CardFooter className="px-4 py-3 flex justify-center" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}>
+        <p className="text-lg font-bold text-black">${product.price.toFixed(2)}</p>
+      </CardFooter>
+    </Card>
+  </Link>
+))}
         </div>
 
         {/* Countdown Timer */}
