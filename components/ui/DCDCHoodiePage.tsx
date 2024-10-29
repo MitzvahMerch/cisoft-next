@@ -11,7 +11,6 @@ interface SizeQuantity {
   quantity: number;
 }
 
-// New interfaces for cart management
 interface CartItem {
   productId: string;
   productName: string;
@@ -32,7 +31,6 @@ const DCDCHoodiePage = () => {
     { size: "XXL", quantity: 0 }
   ]);
 
-  // Add state for cart feedback
   const [addedToCart, setAddedToCart] = useState(false);
 
   const updateQuantity = (size: string, increment: boolean) => {
@@ -45,60 +43,47 @@ const DCDCHoodiePage = () => {
       }
       return item;
     }));
-    // Reset the "Added to Cart" message when quantities change
     setAddedToCart(false);
   };
 
   const totalItems = sizeSelections.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = totalItems * 34.99;
 
-// Replace the existing addToCart function with this one:
-const addToCart = () => {
-  const selectedSizes = sizeSelections.filter(size => size.quantity > 0);
-  
-  if (selectedSizes.length === 0) return;
-
-  const cartItem: CartItem = {
-    productId: 'dcdc-hoodie',
-    productName: 'DCDC Hoodie',
-    price: 34.99,
-    sizes: selectedSizes,
-    image: '/images/WhiteSweatshirtFront.png'
-  };
-
-  // Debug log
-  console.log('Adding to cart:', cartItem);
-
-  try {
-    // Get existing cart
-    const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
-    console.log('Existing cart:', existingCart);
+  const addToCart = () => {
+    const selectedSizes = sizeSelections.filter(size => size.quantity > 0);
     
-    const existingItemIndex = existingCart.findIndex(
-      (item: CartItem) => item.productId === cartItem.productId
-    );
+    if (selectedSizes.length === 0) return;
 
-    if (existingItemIndex >= 0) {
-      existingCart[existingItemIndex] = cartItem;
-    } else {
-      existingCart.push(cartItem);
+    const cartItem: CartItem = {
+      productId: 'dcdc-hoodie',
+      productName: 'DCDC Hoodie',
+      price: 34.99,
+      sizes: selectedSizes,
+      image: '/images/WhiteSweatshirtFront.png'
+    };
+
+    try {
+      const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
+      
+      const existingItemIndex = existingCart.findIndex(
+        (item: CartItem) => item.productId === cartItem.productId
+      );
+
+      if (existingItemIndex >= 0) {
+        existingCart[existingItemIndex] = cartItem;
+      } else {
+        existingCart.push(cartItem);
+      }
+
+      localStorage.setItem('cart', JSON.stringify(existingCart));
+      setAddedToCart(true);
+    } catch (error) {
+      console.error('Error adding to cart:', error);
     }
-
-    // Save and log
-    localStorage.setItem('cart', JSON.stringify(existingCart));
-    console.log('Updated cart:', JSON.parse(localStorage.getItem('cart') || '[]'));
-    
-    setAddedToCart(true);
-  } catch (error) {
-    console.error('Error adding to cart:', error);
-  }
-};
-
-  // Rest of your component (nav and layout) stays the same until the Add to Cart button
+  };
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#DAC2A8' }}>
-      {/* Navigation Header */}
       <nav className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-24">
@@ -126,19 +111,17 @@ const addToCart = () => {
                 height={64}
                 className="object-contain mr-4"
               />
-              <button className="p-2 rounded-full hover:bg-gray-100">
+              <Link href="/cart" className="p-2 rounded-full hover:bg-gray-100">
                 <ShoppingCart className="h-6 w-6 text-black" />
-              </button>
+              </Link>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Main Content */}
       <div className="flex items-start justify-center p-8">
         <Card className="w-full max-w-[1200px] p-6 bg-white">
           <CardContent className="flex gap-8">
-            {/* Left: Product Image */}
             <div className="w-2/3">
               <div className="relative h-[400px] border-2 border-black">
                 <Image
@@ -151,13 +134,11 @@ const addToCart = () => {
               </div>
             </div>
 
-            {/* Right: Product Info & Controls */}
             <div className="w-1/3">
               <div className="space-y-6">
                 <h1 className="text-2xl font-bold text-black">DCDC Hoodie</h1>
                 <p className="text-xl text-black">$34.99</p>
                 
-                {/* Size Selection Grid */}
                 <div className="grid grid-cols-2 gap-2">
                   {sizeSelections.map((item) => (
                     <div key={item.size} className="flex items-center justify-between p-2 bg-gray-50 rounded-md">
@@ -181,7 +162,6 @@ const addToCart = () => {
                   ))}
                 </div>
 
-                {/* Total and Add to Cart */}
                 <div className="space-y-4 pt-4 border-t">
                   <div className="flex justify-between">
                     <span className="text-black font-medium">Total Items:</span>
@@ -199,17 +179,12 @@ const addToCart = () => {
                     {addedToCart ? 'Added to Cart!' : 'Add to Cart'}
                   </button>
                   {addedToCart && (
-                    <p className="text-green-600 text-sm text-center">
-                      Successfully added to cart!
-                      {/* Add this right after the success message */}
-<button 
-  onClick={() => console.log('Cart contents:', JSON.parse(localStorage.getItem('cart') || '[]'))}
-  className="w-full text-sm text-gray-500 p-2"
->
-  Check Cart Contents
-</button>
-                    </p>
-                    
+                    <div className="text-center space-y-2">
+                      <p className="text-green-600 text-sm">Successfully added to cart!</p>
+                      <Link href="/cart" className="text-blue-600 hover:text-blue-800 text-sm block">
+                        Continue to Cart
+                      </Link>
+                    </div>
                   )}
                 </div>
               </div>
