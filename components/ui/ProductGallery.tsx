@@ -164,10 +164,10 @@ const ProductGallery = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {products.map((product) => (
-  <Link href={`/ui/${product.slug}`} key={product.id} className="block">
+  <Link href={`/DCDCHoodiePage`} key={product.id} className="block">  {/* Changed this line */}
     <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200 bg-white h-full flex flex-col">
-      <CardContent className="p-4 relative flex-grow flex flex-col items-center"> {/* Added flex and centering */}
-        <div className="w-full h-64 relative overflow-hidden flex items-center justify-center"> {/* Added flex centering */}
+      <CardContent className="p-4 relative flex-grow flex flex-col items-center">
+        <div className="w-full h-64 relative overflow-hidden flex items-center justify-center">
           <Image
             src={getProductImage(product)}
             alt={product.name}
@@ -189,7 +189,7 @@ const ProductGallery = () => {
             <RotateCw className="h-5 w-5 text-black" />
           </button>
         )}
-        <div className="mt-4 text-center w-full"> {/* Added text-center */}
+        <div className="mt-4 text-center w-full">
           <h2 className="text-lg font-semibold text-black hover:text-gray-700 transition-colors">{product.name}</h2>
         </div>
       </CardContent>
