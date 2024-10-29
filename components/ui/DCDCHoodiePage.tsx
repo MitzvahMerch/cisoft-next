@@ -12,10 +12,14 @@ interface SizeQuantity {
 
 const DCDCHoodiePage = () => {
   const [sizeSelections, setSizeSelections] = useState<SizeQuantity[]>([
+    { size: "YS", quantity: 0 },
+    { size: "YM", quantity: 0 },
+    { size: "YL", quantity: 0 },
     { size: "Small", quantity: 0 },
     { size: "Medium", quantity: 0 },
     { size: "Large", quantity: 0 },
-    { size: "X-Large", quantity: 0 }
+    { size: "X-Large", quantity: 0 },
+    { size: "XXL", quantity: 0 }
   ]);
 
   const updateQuantity = (size: string, increment: boolean) => {
@@ -56,19 +60,19 @@ const DCDCHoodiePage = () => {
               <h1 className="text-2xl font-bold text-black">DCDC Hoodie</h1>
               <p className="text-xl text-black">$34.99</p>
               
-              {/* Size Selection Grid */}
-              <div className="space-y-4">
+              {/* Size Selection Grid - Two Columns */}
+              <div className="grid grid-cols-2 gap-2">
                 {sizeSelections.map((item) => (
                   <div key={item.size} className="flex items-center justify-between p-2 bg-gray-50 rounded-md">
-                    <span className="text-black font-medium">{item.size}</span>
-                    <div className="flex items-center gap-3">
+                    <span className="text-black font-medium w-12">{item.size}</span>
+                    <div className="flex items-center gap-1">
                       <button 
                         onClick={() => updateQuantity(item.size, false)}
                         className="p-1 hover:bg-gray-200 rounded"
                       >
                         <Minus className="h-4 w-4 text-black" />
                       </button>
-                      <span className="text-black w-8 text-center">{item.quantity}</span>
+                      <span className="text-black w-6 text-center">{item.quantity}</span>
                       <button 
                         onClick={() => updateQuantity(item.size, true)}
                         className="p-1 hover:bg-gray-200 rounded"
