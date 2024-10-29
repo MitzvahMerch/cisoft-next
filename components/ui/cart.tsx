@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
-import { X } from 'lucide-react';  // Only importing X since we're using it
+import { Plus, Minus, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 
 interface SizeQuantity {
@@ -19,34 +19,71 @@ interface CartItem {
   image: string;
 }
 
-const CartPage = () => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+const DCDCHoodiePage = () => {
+  const [sizeSelections, setSizeSelections] = useState<SizeQuantity[]>([
+    { size: "YS", quantity: 0 },
+    { size: "YM", quantity: 0 },
+    { size: "YL", quantity: 0 },
+    { size: "Small", quantity: 0 },
+    { size: "Medium", quantity: 0 },
+    { size: "Large", quantity: 0 },
+    { size: "X-Large", quantity: 0 },
+    { size: "XXL", quantity: 0 }
+  ]);
 
-  useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      setCartItems(JSON.parse(savedCart));
+  const [addedToCart, setAddedToCart] = useState(false);
+
+  const updateQuantity = (size: string, increment: boolean) => {
+    setSizeSelections(prev => prev.map(item => {
+      if (item.size === size) {
+        return {
+          ...item,
+          quantity: increment ? item.quantity + 1 : Math.max(0, item.quantity - 1)
+        };
+      }
+      return item;
+    }));
+    setAddedToCart(false);
+  };
+
+  const totalItems = sizeSelections.reduce((sum, item) => sum + item.quantity, 0);
+  const totalPrice = totalItems * 34.99;
+
+  const addToCart = () => {
+    const selectedSizes = sizeSelections.filter(size => size.quantity > 0);
+    
+    if (selectedSizes.length === 0) return;
+
+    const cartItem: CartItem = {
+      productId: 'dcdc-hoodie',
+      productName: 'DCDC Hoodie',
+      price: 34.99,
+      sizes: selectedSizes,
+      image: '/images/WhiteSweatshirtFront.png'
+    };
+
+    try {
+      const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
+      
+      const existingItemIndex = existingCart.findIndex(
+        (item: CartItem) => item.productId === cartItem.productId
+      );
+
+      if (existingItemIndex >= 0) {
+        existingCart[existingItemIndex] = cartItem;
+      } else {
+        existingCart.push(cartItem);
+      }
+
+      localStorage.setItem('cart', JSON.stringify(existingCart));
+      setAddedToCart(true);
+    } catch (error) {
+      console.error('Error adding to cart:', error);
     }
-  }, []);
-
-  const totalPrice = cartItems.reduce((total, item) => {
-    const itemTotal = item.sizes.reduce((sum, size) => sum + (size.quantity * item.price), 0);
-    return total + itemTotal;
-  }, 0);
-
-  const totalItems = cartItems.reduce((total, item) => {
-    return total + item.sizes.reduce((sum, size) => sum + size.quantity, 0);
-  }, 0);
-
-  const removeItem = (productId: string) => {
-    const newCart = cartItems.filter(item => item.productId !== productId);
-    setCartItems(newCart);
-    localStorage.setItem('cart', JSON.stringify(newCart));
   };
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#DAC2A8' }}>
-      {/* Navigation Header */}
       <nav className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-24">
@@ -74,85 +111,84 @@ const CartPage = () => {
                 height={64}
                 className="object-contain mr-4"
               />
+              <Link href="/cart" className="p-2 rounded-full hover:bg-gray-100">
+                <ShoppingCart className="h-6 w-6 text-black" />
+              </Link>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Cart Content */}
-      <div className="max-w-4xl mx-auto p-8">
-        <Card className="bg-white">
-          <CardContent className="p-6">
-            <h1 className="text-2xl font-bold text-black mb-6">Shopping Cart ({totalItems} items)</h1>
-            
-            {cartItems.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-gray-500">Your cart is empty</p>
-                <Link href="/" className="text-blue-600 hover:text-blue-800 mt-4 inline-block">
-                  Continue Shopping
-                </Link>
+      <div className="flex items-start justify-center p-8">
+        <Card className="w-full max-w-[1200px] p-6 bg-white">
+          <CardContent className="flex gap-8">
+            <div className="w-2/3">
+              <div className="relative h-[400px] border-2 border-black">
+                <Image
+                  src="/images/WhiteSweatshirtFront.png"
+                  alt="DCDC Hoodie"
+                  fill
+                  className="object-contain"
+                  priority
+                />
               </div>
-            ) : (
-              <>
-                {/* Cart Items */}
-                <div className="space-y-6">
-                  {cartItems.map((item) => (
-                    <div key={item.productId} className="flex gap-4 p-4 border rounded-lg">
-                      {/* Product Image */}
-                      <div className="relative w-24 h-24">
-                        <Image
-                          src={item.image}
-                          alt={item.productName}
-                          fill
-                          className="object-contain"
-                        />
-                      </div>
+            </div>
 
-                      {/* Product Details */}
-                      <div className="flex-1">
-                        <div className="flex justify-between">
-                          <h2 className="font-semibold text-black">{item.productName}</h2>
-                          <button 
-                            onClick={() => removeItem(item.productId)}
-                            className="text-gray-400 hover:text-gray-600"
-                          >
-                            <X size={20} />
-                          </button>
-                        </div>
-                        
-                        {/* Size Quantities */}
-                        <div className="mt-2 space-y-1">
-                          {item.sizes.map((size) => (
-                            <div key={size.size} className="flex items-center text-sm text-gray-600">
-                              <span className="w-12">{size.size}:</span>
-                              <span className="ml-2">Qty: {size.quantity}</span>
-                            </div>
-                          ))}
-                        </div>
-                        
-                        {/* Item Total */}
-                        <div className="mt-2 text-right">
-                          <p className="text-black font-medium">
-                            ${(item.price * item.sizes.reduce((sum, size) => sum + size.quantity, 0)).toFixed(2)}
-                          </p>
-                        </div>
+            <div className="w-1/3">
+              <div className="space-y-6">
+                <h1 className="text-2xl font-bold text-black">DCDC Hoodie</h1>
+                <p className="text-xl text-black">$34.99</p>
+                
+                <div className="grid grid-cols-2 gap-2">
+                  {sizeSelections.map((item) => (
+                    <div key={item.size} className="flex items-center justify-between p-2 bg-gray-50 rounded-md">
+                      <span className="text-black font-medium w-12">{item.size}</span>
+                      <div className="flex items-center gap-1">
+                        <button 
+                          onClick={() => updateQuantity(item.size, false)}
+                          className="p-1 hover:bg-gray-200 rounded"
+                        >
+                          <Minus className="h-4 w-4 text-black" />
+                        </button>
+                        <span className="text-black w-6 text-center">{item.quantity}</span>
+                        <button 
+                          onClick={() => updateQuantity(item.size, true)}
+                          className="p-1 hover:bg-gray-200 rounded"
+                        >
+                          <Plus className="h-4 w-4 text-black" />
+                        </button>
                       </div>
                     </div>
                   ))}
                 </div>
 
-                {/* Cart Summary */}
-                <div className="mt-8 border-t pt-6">
-                  <div className="flex justify-between text-xl font-bold text-black">
-                    <span>Total</span>
-                    <span>${totalPrice.toFixed(2)}</span>
+                <div className="space-y-4 pt-4 border-t">
+                  <div className="flex justify-between">
+                    <span className="text-black font-medium">Total Items:</span>
+                    <span className="text-black">{totalItems}</span>
                   </div>
-                  <button className="w-full bg-gray-200 hover:bg-gray-300 text-black py-3 rounded-md mt-4">
-                    Proceed to Checkout
+                  <div className="flex justify-between">
+                    <span className="text-black font-medium">Total Price:</span>
+                    <span className="text-black">${totalPrice.toFixed(2)}</span>
+                  </div>
+                  <button 
+                    onClick={addToCart}
+                    className="w-full bg-gray-200 hover:bg-gray-300 p-2 rounded-md text-black disabled:opacity-50"
+                    disabled={totalItems === 0}
+                  >
+                    {addedToCart ? 'Added to Cart!' : 'Add to Cart'}
                   </button>
+                  {addedToCart && (
+                    <div className="text-center space-y-2">
+                      <p className="text-green-600 text-sm">Successfully added to cart!</p>
+                      <Link href="/cart" className="text-blue-600 hover:text-blue-800 text-sm block">
+                        Continue to Cart
+                      </Link>
+                    </div>
+                  )}
                 </div>
-              </>
-            )}
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -160,4 +196,4 @@ const CartPage = () => {
   );
 };
 
-export default CartPage;
+export default DCDCHoodiePage;
