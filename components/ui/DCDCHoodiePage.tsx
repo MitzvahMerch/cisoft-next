@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 
 const DCDCHoodiePage = () => {
   return (
-    <div className="min-h-screen flex items-start justify-center p-8">
+    <div className="min-h-screen flex items-start justify-center p-8" style={{ backgroundColor: '#DAC2A8' }}>
       {/* Main Container - same structure as gallery */}
       <Card className="w-full max-w-[1200px] p-6 bg-white">
         <CardContent className="flex gap-8">
@@ -26,17 +26,17 @@ const DCDCHoodiePage = () => {
           {/* Right: Product Info & Controls - using gallery styling */}
           <div className="w-1/3">
             <div className="space-y-4">
-              <h1 className="text-2xl font-bold">DCDC Hoodie</h1>
-              <p className="text-xl">$34.99</p>
+              <h1 className="text-2xl font-bold text-black">DCDC Hoodie</h1>
+              <p className="text-xl text-black">$34.99</p>
               <div className="space-y-4">
-                <select className="w-full border rounded-md p-2">
+                <select className="w-full border rounded-md p-2 text-black bg-white">
                   <option value="">Select Size</option>
                   <option>Small</option>
                   <option>Medium</option>
                   <option>Large</option>
                   <option>X-Large</option>
                 </select>
-                <button className="w-full bg-gray-200 hover:bg-gray-300 p-2 rounded-md">
+                <button className="w-full bg-gray-200 hover:bg-gray-300 p-2 rounded-md text-black">
                   Add to Cart
                 </button>
               </div>
