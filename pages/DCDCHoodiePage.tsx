@@ -6,11 +6,11 @@ import { Card } from '@/components/ui/card';
 
 const ProductPage = () => {
   return (
-    <div className="min-h-screen bg-white p-8">
+    <div className="p-8 bg-white">
       <div className="max-w-6xl mx-auto flex gap-8">
-        {/* Left: Product Image Container */}
+        {/* Left: Product Image Container - Now with fixed height */}
         <div className="w-3/4 bg-white rounded-lg overflow-hidden">
-          <div className="relative aspect-square">
+          <div className="relative h-[500px]">  {/* Changed from aspect-square to fixed height */}
             <Image
               src="/images/WhiteSweatshirtFront.png"
               alt="DCDC Hoodie"
