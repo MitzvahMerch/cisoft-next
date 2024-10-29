@@ -52,46 +52,47 @@ const DCDCHoodiePage = () => {
   const totalItems = sizeSelections.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = totalItems * 34.99;
 
-  // Function to add items to cart
-  const addToCart = () => {
-    // Only add sizes with quantity > 0
-    const selectedSizes = sizeSelections.filter(size => size.quantity > 0);
-    
-    if (selectedSizes.length === 0) return;
+// Replace the existing addToCart function with this one:
+const addToCart = () => {
+  const selectedSizes = sizeSelections.filter(size => size.quantity > 0);
+  
+  if (selectedSizes.length === 0) return;
 
-    const cartItem: CartItem = {
-      productId: 'dcdc-hoodie',
-      productName: 'DCDC Hoodie',
-      price: 34.99,
-      sizes: selectedSizes,
-      image: '/images/WhiteSweatshirtFront.png'
-    };
+  const cartItem: CartItem = {
+    productId: 'dcdc-hoodie',
+    productName: 'DCDC Hoodie',
+    price: 34.99,
+    sizes: selectedSizes,
+    image: '/images/WhiteSweatshirtFront.png'
+  };
 
-    // Get existing cart or initialize empty array
+  // Debug log
+  console.log('Adding to cart:', cartItem);
+
+  try {
+    // Get existing cart
     const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
+    console.log('Existing cart:', existingCart);
     
-    // Check if this product is already in cart
     const existingItemIndex = existingCart.findIndex(
       (item: CartItem) => item.productId === cartItem.productId
     );
 
     if (existingItemIndex >= 0) {
-      // Update existing item
       existingCart[existingItemIndex] = cartItem;
     } else {
-      // Add new item
       existingCart.push(cartItem);
     }
 
-    // Save back to localStorage
+    // Save and log
     localStorage.setItem('cart', JSON.stringify(existingCart));
+    console.log('Updated cart:', JSON.parse(localStorage.getItem('cart') || '[]'));
     
-    // Show feedback
     setAddedToCart(true);
-    
-    // Optional: Reset selections after adding to cart
-    // setSizeSelections(sizeSelections.map(size => ({ ...size, quantity: 0 })));
-  };
+  } catch (error) {
+    console.error('Error adding to cart:', error);
+  }
+};
 
   // Rest of your component (nav and layout) stays the same until the Add to Cart button
 
@@ -200,7 +201,15 @@ const DCDCHoodiePage = () => {
                   {addedToCart && (
                     <p className="text-green-600 text-sm text-center">
                       Successfully added to cart!
+                      {/* Add this right after the success message */}
+<button 
+  onClick={() => console.log('Cart contents:', JSON.parse(localStorage.getItem('cart') || '[]'))}
+  className="w-full text-sm text-gray-500 p-2"
+>
+  Check Cart Contents
+</button>
                     </p>
+                    
                   )}
                 </div>
               </div>
