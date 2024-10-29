@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Plus, Minus, ShoppingCart } from 'lucide-react';
@@ -9,6 +9,15 @@ import Link from 'next/link';
 interface SizeQuantity {
   size: string;
   quantity: number;
+}
+
+// New interfaces for cart management
+interface CartItem {
+  productId: string;
+  productName: string;
+  price: number;
+  sizes: SizeQuantity[];
+  image: string;
 }
 
 const DCDCHoodiePage = () => {
@@ -23,6 +32,9 @@ const DCDCHoodiePage = () => {
     { size: "XXL", quantity: 0 }
   ]);
 
+  // Add state for cart feedback
+  const [addedToCart, setAddedToCart] = useState(false);
+
   const updateQuantity = (size: string, increment: boolean) => {
     setSizeSelections(prev => prev.map(item => {
       if (item.size === size) {
@@ -33,10 +45,55 @@ const DCDCHoodiePage = () => {
       }
       return item;
     }));
+    // Reset the "Added to Cart" message when quantities change
+    setAddedToCart(false);
   };
 
   const totalItems = sizeSelections.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = totalItems * 34.99;
+
+  // Function to add items to cart
+  const addToCart = () => {
+    // Only add sizes with quantity > 0
+    const selectedSizes = sizeSelections.filter(size => size.quantity > 0);
+    
+    if (selectedSizes.length === 0) return;
+
+    const cartItem: CartItem = {
+      productId: 'dcdc-hoodie',
+      productName: 'DCDC Hoodie',
+      price: 34.99,
+      sizes: selectedSizes,
+      image: '/images/WhiteSweatshirtFront.png'
+    };
+
+    // Get existing cart or initialize empty array
+    const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
+    
+    // Check if this product is already in cart
+    const existingItemIndex = existingCart.findIndex(
+      (item: CartItem) => item.productId === cartItem.productId
+    );
+
+    if (existingItemIndex >= 0) {
+      // Update existing item
+      existingCart[existingItemIndex] = cartItem;
+    } else {
+      // Add new item
+      existingCart.push(cartItem);
+    }
+
+    // Save back to localStorage
+    localStorage.setItem('cart', JSON.stringify(existingCart));
+    
+    // Show feedback
+    setAddedToCart(true);
+    
+    // Optional: Reset selections after adding to cart
+    // setSizeSelections(sizeSelections.map(size => ({ ...size, quantity: 0 })));
+  };
+
+  // Rest of your component (nav and layout) stays the same until the Add to Cart button
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#DAC2A8' }}>
@@ -99,7 +156,7 @@ const DCDCHoodiePage = () => {
                 <h1 className="text-2xl font-bold text-black">DCDC Hoodie</h1>
                 <p className="text-xl text-black">$34.99</p>
                 
-                {/* Size Selection Grid - Two Columns */}
+                {/* Size Selection Grid */}
                 <div className="grid grid-cols-2 gap-2">
                   {sizeSelections.map((item) => (
                     <div key={item.size} className="flex items-center justify-between p-2 bg-gray-50 rounded-md">
@@ -134,11 +191,17 @@ const DCDCHoodiePage = () => {
                     <span className="text-black">${totalPrice.toFixed(2)}</span>
                   </div>
                   <button 
+                    onClick={addToCart}
                     className="w-full bg-gray-200 hover:bg-gray-300 p-2 rounded-md text-black disabled:opacity-50"
                     disabled={totalItems === 0}
                   >
-                    Add to Cart
+                    {addedToCart ? 'Added to Cart!' : 'Add to Cart'}
                   </button>
+                  {addedToCart && (
+                    <p className="text-green-600 text-sm text-center">
+                      Successfully added to cart!
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
