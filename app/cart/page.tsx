@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Minus, ShoppingCart, X } from 'lucide-react';
+import { X } from 'lucide-react';  // Only importing X since we're using it
 import Link from 'next/link';
 
 interface SizeQuantity {
@@ -22,7 +22,6 @@ interface CartItem {
 const CartPage = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
-  // Load cart items on component mount
   useEffect(() => {
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
@@ -30,18 +29,15 @@ const CartPage = () => {
     }
   }, []);
 
-  // Calculate total price
   const totalPrice = cartItems.reduce((total, item) => {
     const itemTotal = item.sizes.reduce((sum, size) => sum + (size.quantity * item.price), 0);
     return total + itemTotal;
   }, 0);
 
-  // Calculate total items
   const totalItems = cartItems.reduce((total, item) => {
     return total + item.sizes.reduce((sum, size) => sum + size.quantity, 0);
   }, 0);
 
-  // Remove item from cart
   const removeItem = (productId: string) => {
     const newCart = cartItems.filter(item => item.productId !== productId);
     setCartItems(newCart);
