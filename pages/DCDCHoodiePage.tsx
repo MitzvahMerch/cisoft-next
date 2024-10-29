@@ -7,10 +7,10 @@ import { Card } from '@/components/ui/card';
 const ProductPage = () => {
   return (
     <div className="p-8 bg-white">
-      <div className="max-w-6xl mx-auto flex gap-8">
-        {/* Left: Product Image Container - Now with fixed height */}
-        <div className="w-3/4 bg-white rounded-lg overflow-hidden">
-          <div className="relative h-[500px]">  {/* Changed from aspect-square to fixed height */}
+      <div className="max-w-4xl mx-auto flex gap-8">  {/* Reduced from 6xl to 4xl */}
+        {/* Left: Product Image Container - Reduced size */}
+        <div className="w-2/3 bg-white rounded-lg overflow-hidden border-2 border-black">  {/* Changed from w-3/4, added border */}
+          <div className="relative h-[300px]">  {/* Reduced from 500px to 300px */}
             <Image
               src="/images/WhiteSweatshirtFront.png"
               alt="DCDC Hoodie"
@@ -22,7 +22,7 @@ const ProductPage = () => {
         </div>
 
         {/* Right: Selection Panel */}
-        <Card className="w-1/4 h-fit p-6 space-y-4">
+        <Card className="w-1/3 h-fit p-6 space-y-4">  {/* Changed from w-1/4 to match new proportions */}
           <h1 className="text-xl font-bold">DCDC Hoodie</h1>
           <p className="text-lg font-semibold">$34.99</p>
           <select className="w-full border rounded px-3 py-2">
