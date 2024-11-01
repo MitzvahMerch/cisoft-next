@@ -3,8 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
-import { X } from 'lucide-react';  // Only importing X since we're using it
+import { X } from 'lucide-react';
 import Link from 'next/link';
+import { PayPalButtons } from "@paypal/react-paypal-js";
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 interface SizeQuantity {
   size: string;
@@ -21,6 +24,7 @@ interface CartItem {
 
 const CartPage = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     const savedCart = localStorage.getItem('cart');
@@ -42,6 +46,75 @@ const CartPage = () => {
     const newCart = cartItems.filter(item => item.productId !== productId);
     setCartItems(newCart);
     localStorage.setItem('cart', JSON.stringify(newCart));
+  };
+
+  // PayPal integration functions
+  const createOrder = (data: any, actions: any) => {
+    return actions.order.create({
+      purchase_units: [{
+        amount: {
+          value: totalPrice.toFixed(2),
+          currency_code: "USD"
+        },
+        description: `DCDC Fundraiser Store Order - ${totalItems} items`
+      }]
+    });
+  };
+
+  const handlePaypalApprove = async (data: any, actions: any) => {
+    try {
+      setIsProcessing(true);
+      
+      // Complete the PayPal transaction
+      const details = await actions.order.capture();
+      
+      // Prepare order data for Firestore
+      const orderData = {
+        items: cartItems.map(item => ({
+          productId: item.productId,
+          productName: item.productName,
+          price: item.price,
+          sizes: item.sizes,
+          totalQuantity: item.sizes.reduce((sum, size) => sum + size.quantity, 0),
+          itemTotal: item.price * item.sizes.reduce((sum, size) => sum + size.quantity, 0)
+        })),
+        orderSummary: {
+          totalAmount: totalPrice,
+          totalItems: totalItems,
+          currency: 'USD'
+        },
+        paymentDetails: {
+          paypalOrderId: details.id,
+          paymentStatus: details.status,
+          payerEmail: details.payer.email_address,
+          payerName: `${details.payer.name.given_name} ${details.payer.name.surname}`,
+          transactionDate: new Date().toISOString()
+        },
+        shippingAddress: {
+          fullName: details.purchase_units[0].shipping.name.full_name,
+          address: details.purchase_units[0].shipping.address
+        },
+        orderStatus: 'pending',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      // Save order to Firestore
+      const ordersRef = collection(db, 'orders');
+      const docRef = await addDoc(ordersRef, orderData);
+
+      // Clear cart after successful order
+      localStorage.removeItem('cart');
+      setCartItems([]);
+
+      alert(`Thank you for your order! Your order ID is: ${docRef.id}`);
+      
+    } catch (error) {
+      console.error('Error processing order:', error);
+      alert('There was an error processing your order. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -141,15 +214,27 @@ const CartPage = () => {
                   ))}
                 </div>
 
-                {/* Cart Summary */}
+                {/* Cart Summary and PayPal Integration */}
                 <div className="mt-8 border-t pt-6">
-                  <div className="flex justify-between text-xl font-bold text-black">
+                  <div className="flex justify-between text-xl font-bold text-black mb-6">
                     <span>Total</span>
                     <span>${totalPrice.toFixed(2)}</span>
                   </div>
-                  <button className="w-full bg-gray-200 hover:bg-gray-300 text-black py-3 rounded-md mt-4">
-                    Proceed to Checkout
-                  </button>
+                  
+                  {/* PayPal Buttons */}
+                  <div className={`${isProcessing ? 'opacity-50 pointer-events-none' : ''}`}>
+                    <PayPalButtons
+                      createOrder={createOrder}
+                      onApprove={handlePaypalApprove}
+                      style={{ layout: "horizontal" }}
+                    />
+                  </div>
+
+                  {isProcessing && (
+                    <div className="text-center mt-4 text-gray-600">
+                      Processing your order...
+                    </div>
+                  )}
                 </div>
               </>
             )}
