@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -13,11 +14,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <script src="https://www.paypal.com/sdk/js?client-id=Aa2-mzkmjWQCgXq3zONHNu1eFWPABooevh0Hjp_z7PMBjZOJ0xdCIAIgE4eK8MJ4TcowsMROEefprlvm"></script>
-      </head>
       <body className="antialiased">
         {children}
+        <Script
+          src="https://www.paypal.com/sdk/js?client-id=Aa2-mzkmjWQCgXq3zONHNu1eFWPABooevh0Hjp_z7PMBjZOJ0xdCIAIgE4eK8MJ4TcowsMROEefprlvm"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );

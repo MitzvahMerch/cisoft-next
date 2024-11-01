@@ -21,10 +21,61 @@ interface CartItem {
   image: string;
 }
 
-// Add PayPal to window type
+interface PayPalOrderData {
+  orderID: string;
+}
+
+interface PayPalActions {
+  order: {
+    create: (data: {
+      purchase_units: Array<{
+        amount: {
+          value: string;
+          currency_code: string;
+        };
+        description: string;
+      }>;
+    }) => Promise<string>;
+    capture: () => Promise<PayPalOrderDetails>;
+  };
+}
+
+interface PayPalOrderDetails {
+  id: string;
+  status: string;
+  payer: {
+    email_address: string;
+    name: {
+      given_name: string;
+      surname: string;
+    };
+  };
+  purchase_units: Array<{
+    shipping: {
+      name: {
+        full_name: string;
+      };
+      address: {
+        address_line_1: string;
+        admin_area_2: string;
+        admin_area_1: string;
+        postal_code: string;
+        country_code: string;
+      };
+    };
+  }>;
+}
+
 declare global {
   interface Window {
-    paypal?: any;
+    paypal?: {
+      Buttons: (config: {
+        createOrder: (data: PayPalOrderData, actions: PayPalActions) => Promise<string>;
+        onApprove: (data: PayPalOrderData, actions: PayPalActions) => Promise<void>;
+      }) => {
+        render: (element: HTMLElement) => void;
+      };
+    };
   }
 }
 
@@ -33,6 +84,15 @@ const CartPage = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const paypalButtonRef = useRef<HTMLDivElement>(null);
 
+  const totalPrice = cartItems.reduce((total, item) => {
+    const itemTotal = item.sizes.reduce((sum, size) => sum + (size.quantity * item.price), 0);
+    return total + itemTotal;
+  }, 0);
+
+  const totalItems = cartItems.reduce((total, item) => {
+    return total + item.sizes.reduce((sum, size) => sum + size.quantity, 0);
+  }, 0);
+
   useEffect(() => {
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
@@ -40,15 +100,13 @@ const CartPage = () => {
     }
   }, []);
 
-  // Initialize PayPal buttons when cart changes
   useEffect(() => {
     if (!paypalButtonRef.current || !cartItems.length || !window.paypal) return;
 
-    // Clear existing buttons
     paypalButtonRef.current.innerHTML = '';
 
     window.paypal.Buttons({
-      createOrder: (data: any, actions: any) => {
+      createOrder: (data: PayPalOrderData, actions: PayPalActions) => {
         return actions.order.create({
           purchase_units: [{
             amount: {
@@ -59,12 +117,11 @@ const CartPage = () => {
           }]
         });
       },
-      onApprove: async (data: any, actions: any) => {
+      onApprove: async (data: PayPalOrderData, actions: PayPalActions) => {
         try {
           setIsProcessing(true);
           const details = await actions.order.capture();
           
-          // Prepare order data for Firestore
           const orderData = {
             items: cartItems.map(item => ({
               productId: item.productId,
@@ -95,11 +152,9 @@ const CartPage = () => {
             updatedAt: new Date().toISOString()
           };
 
-          // Save order to Firestore
           const ordersRef = collection(db, 'orders');
           const docRef = await addDoc(ordersRef, orderData);
 
-          // Clear cart after successful order
           localStorage.removeItem('cart');
           setCartItems([]);
 
@@ -112,16 +167,7 @@ const CartPage = () => {
         }
       }
     }).render(paypalButtonRef.current);
-  }, [cartItems]);
-
-  const totalPrice = cartItems.reduce((total, item) => {
-    const itemTotal = item.sizes.reduce((sum, size) => sum + (size.quantity * item.price), 0);
-    return total + itemTotal;
-  }, 0);
-
-  const totalItems = cartItems.reduce((total, item) => {
-    return total + item.sizes.reduce((sum, size) => sum + size.quantity, 0);
-  }, 0);
+  }, [cartItems, totalItems, totalPrice]); // Added missing dependencies
 
   const removeItem = (productId: string) => {
     const newCart = cartItems.filter(item => item.productId !== productId);
