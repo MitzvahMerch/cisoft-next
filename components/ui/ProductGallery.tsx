@@ -75,7 +75,7 @@ const ProductGallery = () => {
       price: 34.99,
       image: "/images/DcDcBlack.png",
       imageScale: "100%",
-      slug: "dcdc-black-sweatpants"
+      slug: "DCDCBlackSweatpantsPage"
     },
     {
       id: 3,
@@ -83,7 +83,7 @@ const ProductGallery = () => {
       price: 34.99,
       image: "/images/DanceMomCrew.png",
       imageScale: "70%",
-      slug: "dcdc-dance-mom-crew"
+      slug: "DCDCDanceMomCrewPage"
     },
     {
       id: 4,
@@ -91,7 +91,7 @@ const ProductGallery = () => {
       price: 34.99,
       image: "/images/JerseyExample.png",
       imageScale: "80%",
-      slug: "dcdc-customizable-jersey"
+      slug: "DCDCCustomizableJerseyPage"
     },
     {
       id: 5,
@@ -99,7 +99,7 @@ const ProductGallery = () => {
       price: 34.99,
       image: "/images/DanceMomSweats.png",
       imageScale: "100%",
-      slug: "dance-mom-white-sweatpants"
+      slug: "DanceMomWhiteSweatpantsPage"
     },
     {
       id: 6,
@@ -107,7 +107,7 @@ const ProductGallery = () => {
       price: 34.99,
       image: "/images/TeamDcDcWhite.png",
       imageScale: "100%",
-      slug: "dcdc-white-sweatpants"
+      slug: "DCDCWhiteSweatpantsPage"
     }
   ];
 
@@ -153,9 +153,9 @@ const ProductGallery = () => {
                 height={64}
                 className="object-contain mr-4"
               />
-<Link href="/cart" className="p-2 rounded-full hover:bg-gray-100">
-  <ShoppingCart className="h-6 w-6 text-black" />
-</Link>
+              <Link href="/cart" className="p-2 rounded-full hover:bg-gray-100">
+                <ShoppingCart className="h-6 w-6 text-black" />
+              </Link>
             </div>
           </div>
         </div>
@@ -163,42 +163,42 @@ const ProductGallery = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {products.map((product) => (
-  <Link href={`/DCDCHoodiePage`} key={product.id} className="block">  {/* Changed this line */}
-    <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200 bg-white h-full flex flex-col">
-      <CardContent className="p-4 relative flex-grow flex flex-col items-center">
-        <div className="w-full h-64 relative overflow-hidden flex items-center justify-center">
-          <Image
-            src={getProductImage(product)}
-            alt={product.name}
-            fill
-            className="object-contain"
-            style={{ 
-              objectFit: 'contain',
-              maxHeight: '100%',
-              width: product.imageScale
-            }}
-          />
-        </div>
-        {product.hasMultipleViews && (
-          <button
-            onClick={handleToggleImage}
-            className="absolute right-8 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-md hover:shadow-lg transition-all duration-200"
-            title={showHoodieBack ? "Show Front" : "Show Back"}
-          >
-            <RotateCw className="h-5 w-5 text-black" />
-          </button>
-        )}
-        <div className="mt-4 text-center w-full">
-          <h2 className="text-lg font-semibold text-black hover:text-gray-700 transition-colors">{product.name}</h2>
-        </div>
-      </CardContent>
-      <CardFooter className="px-4 py-3 flex justify-center" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}>
-        <p className="text-lg font-bold text-black">${product.price.toFixed(2)}</p>
-      </CardFooter>
-    </Card>
-  </Link>
-))}
+          {products.map((product) => (
+            <Link href={`/product/${product.slug}`} key={product.id} className="block">
+              <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200 bg-white h-full flex flex-col">
+                <CardContent className="p-4 relative flex-grow flex flex-col items-center">
+                  <div className="w-full h-64 relative overflow-hidden flex items-center justify-center">
+                    <Image
+                      src={getProductImage(product)}
+                      alt={product.name}
+                      fill
+                      className="object-contain"
+                      style={{ 
+                        objectFit: 'contain',
+                        maxHeight: '100%',
+                        width: product.imageScale
+                      }}
+                    />
+                  </div>
+                  {product.hasMultipleViews && (
+                    <button
+                      onClick={handleToggleImage}
+                      className="absolute right-8 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-md hover:shadow-lg transition-all duration-200"
+                      title={showHoodieBack ? "Show Front" : "Show Back"}
+                    >
+                      <RotateCw className="h-5 w-5 text-black" />
+                    </button>
+                  )}
+                  <div className="mt-4 text-center w-full">
+                    <h2 className="text-lg font-semibold text-black hover:text-gray-700 transition-colors">{product.name}</h2>
+                  </div>
+                </CardContent>
+                <CardFooter className="px-4 py-3 flex justify-center" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}>
+                  <p className="text-lg font-bold text-black">${product.price.toFixed(2)}</p>
+                </CardFooter>
+              </Card>
+            </Link>
+          ))}
         </div>
 
         {/* Countdown Timer */}
