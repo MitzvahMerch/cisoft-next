@@ -67,7 +67,7 @@ const ProductGallery = () => {
       },
       hasMultipleViews: true,
       imageScale: "50%",
-      slug: "DCDCHoodiePage"
+      slug: "/DCDCHoodiePage"
     },
     {
       id: 2,
@@ -75,7 +75,7 @@ const ProductGallery = () => {
       price: 34.99,
       image: "/images/DcDcBlack.png",
       imageScale: "100%",
-      slug: "DCDCBlackSweatpantsPage"
+      slug: "/DCDCBlackSweatpantsPage"
     },
     {
       id: 3,
@@ -83,7 +83,7 @@ const ProductGallery = () => {
       price: 34.99,
       image: "/images/DanceMomCrew.png",
       imageScale: "70%",
-      slug: "DCDCDanceMomCrewPage"
+      slug: "/DCDCDanceMomCrewPage"
     },
     {
       id: 4,
@@ -91,7 +91,7 @@ const ProductGallery = () => {
       price: 34.99,
       image: "/images/JerseyExample.png",
       imageScale: "80%",
-      slug: "DCDCCustomizableJerseyPage"
+      slug: "/DCDCCustomizableJerseyPage"
     },
     {
       id: 5,
@@ -99,7 +99,7 @@ const ProductGallery = () => {
       price: 34.99,
       image: "/images/DanceMomSweats.png",
       imageScale: "100%",
-      slug: "DanceMomWhiteSweatpantsPage"
+      slug: "/DanceMomWhiteSweatpantsPage"
     },
     {
       id: 6,
@@ -107,7 +107,7 @@ const ProductGallery = () => {
       price: 34.99,
       image: "/images/TeamDcDcWhite.png",
       imageScale: "100%",
-      slug: "DCDCWhiteSweatpantsPage"
+      slug: "/DCDCWhiteSweatpantsPage"
     }
   ];
 
@@ -164,7 +164,7 @@ const ProductGallery = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((product) => (
-            <Link href={`/product/${product.slug}`} key={product.id} className="block">
+            <Link href={product.slug} key={product.id} className="block">
               <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200 bg-white h-full flex flex-col">
                 <CardContent className="p-4 relative flex-grow flex flex-col items-center">
                   <div className="w-full h-64 relative overflow-hidden flex items-center justify-center">
