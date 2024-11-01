@@ -54,7 +54,7 @@ const DCDCHoodiePage = () => {
     
     if (selectedSizes.length === 0) return;
 
-    const cartItem: CartItem = {
+    const newItem: CartItem = {
       productId: 'dcdc-hoodie',
       productName: 'DCDC Hoodie',
       price: 34.99,
@@ -64,15 +64,33 @@ const DCDCHoodiePage = () => {
 
     try {
       const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
-      
       const existingItemIndex = existingCart.findIndex(
-        (item: CartItem) => item.productId === cartItem.productId
+        (item: CartItem) => item.productId === newItem.productId
       );
 
       if (existingItemIndex >= 0) {
-        existingCart[existingItemIndex] = cartItem;
+        // Merge quantities for existing sizes and add new sizes
+        const existingItem = existingCart[existingItemIndex];
+        const updatedSizes = [...existingItem.sizes];
+
+        newItem.sizes.forEach(newSize => {
+          const existingSizeIndex = updatedSizes.findIndex(size => size.size === newSize.size);
+          if (existingSizeIndex >= 0) {
+            // Add quantity to existing size
+            updatedSizes[existingSizeIndex].quantity += newSize.quantity;
+          } else {
+            // Add new size
+            updatedSizes.push(newSize);
+          }
+        });
+
+        existingCart[existingItemIndex] = {
+          ...existingItem,
+          sizes: updatedSizes
+        };
       } else {
-        existingCart.push(cartItem);
+        // Add new item to cart
+        existingCart.push(newItem);
       }
 
       localStorage.setItem('cart', JSON.stringify(existingCart));
