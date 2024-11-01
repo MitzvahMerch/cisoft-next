@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { X } from 'lucide-react';
 import Link from 'next/link';
-import { PayPalButtons } from "@paypal/react-paypal-js";
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
@@ -22,9 +21,17 @@ interface CartItem {
   image: string;
 }
 
+// Add PayPal to window type
+declare global {
+  interface Window {
+    paypal?: any;
+  }
+}
+
 const CartPage = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const paypalButtonRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const savedCart = localStorage.getItem('cart');
@@ -32,6 +39,80 @@ const CartPage = () => {
       setCartItems(JSON.parse(savedCart));
     }
   }, []);
+
+  // Initialize PayPal buttons when cart changes
+  useEffect(() => {
+    if (!paypalButtonRef.current || !cartItems.length || !window.paypal) return;
+
+    // Clear existing buttons
+    paypalButtonRef.current.innerHTML = '';
+
+    window.paypal.Buttons({
+      createOrder: (data: any, actions: any) => {
+        return actions.order.create({
+          purchase_units: [{
+            amount: {
+              value: totalPrice.toFixed(2),
+              currency_code: "USD"
+            },
+            description: `DCDC Fundraiser Store Order - ${totalItems} items`
+          }]
+        });
+      },
+      onApprove: async (data: any, actions: any) => {
+        try {
+          setIsProcessing(true);
+          const details = await actions.order.capture();
+          
+          // Prepare order data for Firestore
+          const orderData = {
+            items: cartItems.map(item => ({
+              productId: item.productId,
+              productName: item.productName,
+              price: item.price,
+              sizes: item.sizes,
+              totalQuantity: item.sizes.reduce((sum, size) => sum + size.quantity, 0),
+              itemTotal: item.price * item.sizes.reduce((sum, size) => sum + size.quantity, 0)
+            })),
+            orderSummary: {
+              totalAmount: totalPrice,
+              totalItems: totalItems,
+              currency: 'USD'
+            },
+            paymentDetails: {
+              paypalOrderId: details.id,
+              paymentStatus: details.status,
+              payerEmail: details.payer.email_address,
+              payerName: `${details.payer.name.given_name} ${details.payer.name.surname}`,
+              transactionDate: new Date().toISOString()
+            },
+            shippingAddress: {
+              fullName: details.purchase_units[0].shipping.name.full_name,
+              address: details.purchase_units[0].shipping.address
+            },
+            orderStatus: 'pending',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          };
+
+          // Save order to Firestore
+          const ordersRef = collection(db, 'orders');
+          const docRef = await addDoc(ordersRef, orderData);
+
+          // Clear cart after successful order
+          localStorage.removeItem('cart');
+          setCartItems([]);
+
+          alert(`Thank you for your order! Your order ID is: ${docRef.id}`);
+        } catch (error) {
+          console.error('Error processing order:', error);
+          alert('There was an error processing your order. Please try again.');
+        } finally {
+          setIsProcessing(false);
+        }
+      }
+    }).render(paypalButtonRef.current);
+  }, [cartItems]);
 
   const totalPrice = cartItems.reduce((total, item) => {
     const itemTotal = item.sizes.reduce((sum, size) => sum + (size.quantity * item.price), 0);
@@ -46,75 +127,6 @@ const CartPage = () => {
     const newCart = cartItems.filter(item => item.productId !== productId);
     setCartItems(newCart);
     localStorage.setItem('cart', JSON.stringify(newCart));
-  };
-
-  // PayPal integration functions
-  const createOrder = (data: any, actions: any) => {
-    return actions.order.create({
-      purchase_units: [{
-        amount: {
-          value: totalPrice.toFixed(2),
-          currency_code: "USD"
-        },
-        description: `DCDC Fundraiser Store Order - ${totalItems} items`
-      }]
-    });
-  };
-
-  const handlePaypalApprove = async (data: any, actions: any) => {
-    try {
-      setIsProcessing(true);
-      
-      // Complete the PayPal transaction
-      const details = await actions.order.capture();
-      
-      // Prepare order data for Firestore
-      const orderData = {
-        items: cartItems.map(item => ({
-          productId: item.productId,
-          productName: item.productName,
-          price: item.price,
-          sizes: item.sizes,
-          totalQuantity: item.sizes.reduce((sum, size) => sum + size.quantity, 0),
-          itemTotal: item.price * item.sizes.reduce((sum, size) => sum + size.quantity, 0)
-        })),
-        orderSummary: {
-          totalAmount: totalPrice,
-          totalItems: totalItems,
-          currency: 'USD'
-        },
-        paymentDetails: {
-          paypalOrderId: details.id,
-          paymentStatus: details.status,
-          payerEmail: details.payer.email_address,
-          payerName: `${details.payer.name.given_name} ${details.payer.name.surname}`,
-          transactionDate: new Date().toISOString()
-        },
-        shippingAddress: {
-          fullName: details.purchase_units[0].shipping.name.full_name,
-          address: details.purchase_units[0].shipping.address
-        },
-        orderStatus: 'pending',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-
-      // Save order to Firestore
-      const ordersRef = collection(db, 'orders');
-      const docRef = await addDoc(ordersRef, orderData);
-
-      // Clear cart after successful order
-      localStorage.removeItem('cart');
-      setCartItems([]);
-
-      alert(`Thank you for your order! Your order ID is: ${docRef.id}`);
-      
-    } catch (error) {
-      console.error('Error processing order:', error);
-      alert('There was an error processing your order. Please try again.');
-    } finally {
-      setIsProcessing(false);
-    }
   };
 
   return (
@@ -221,14 +233,11 @@ const CartPage = () => {
                     <span>${totalPrice.toFixed(2)}</span>
                   </div>
                   
-                  {/* PayPal Buttons */}
-                  <div className={`${isProcessing ? 'opacity-50 pointer-events-none' : ''}`}>
-                    <PayPalButtons
-                      createOrder={createOrder}
-                      onApprove={handlePaypalApprove}
-                      style={{ layout: "horizontal" }}
-                    />
-                  </div>
+                  {/* PayPal Button Container */}
+                  <div 
+                    ref={paypalButtonRef}
+                    className={`${isProcessing ? 'opacity-50 pointer-events-none' : ''}`}
+                  />
 
                   {isProcessing && (
                     <div className="text-center mt-4 text-gray-600">
