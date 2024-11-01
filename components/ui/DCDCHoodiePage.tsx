@@ -111,7 +111,7 @@ const DCDCHoodiePage = () => {
                 height={64}
                 className="object-contain mr-4"
               />
-             <Link href="/cart/page" className="p-2 rounded-full hover:bg-gray-100">
+             <Link href="/cart" className="p-2 rounded-full hover:bg-gray-100">
                 <ShoppingCart className="h-6 w-6 text-black" />
               </Link>
             </div>
@@ -181,7 +181,7 @@ const DCDCHoodiePage = () => {
                   {addedToCart && (
                     <div className="text-center space-y-2">
                       <p className="text-green-600 text-sm">Successfully added to cart!</p>
-                      <Link href="/cart/page" className="text-blue-600 hover:text-blue-800 text-sm block">
+                      <Link href="/cart" className="text-blue-600 hover:text-blue-800 text-sm block">
                         Continue to Cart
                       </Link>
                     </div>

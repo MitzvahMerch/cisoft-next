@@ -153,7 +153,7 @@ const ProductGallery = () => {
                 height={64}
                 className="object-contain mr-4"
               />
-<Link href="/cart/page" className="p-2 rounded-full hover:bg-gray-100">
+<Link href="/cart" className="p-2 rounded-full hover:bg-gray-100">
   <ShoppingCart className="h-6 w-6 text-black" />
 </Link>
             </div>
