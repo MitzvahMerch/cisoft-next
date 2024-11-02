@@ -7,6 +7,7 @@ import { X } from 'lucide-react';
 import Link from 'next/link';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { FirebaseError } from 'firebase/app';
 
 interface SizeQuantity {
   size: string;
@@ -193,45 +194,34 @@ useEffect(() => {
         };
     
         console.log('3. Order data prepared:', orderData);
-        console.log('4. Database instance:', db);
     
-        try {
-          // Test writing to a different collection first
-          console.log('5. Testing write to sessions collection');
-          const testRef = collection(db, 'sessions');
-          const testDoc = await addDoc(testRef, { test: true });
-          console.log('6. Test write successful:', testDoc.id);
+        // Test writing to a different collection first
+        console.log('5. Testing write to sessions collection');
+        const testRef = collection(db, 'sessions');
+        const testDoc = await addDoc(testRef, { test: true });
+        console.log('6. Test write successful:', testDoc.id);
     
-          console.log('7. Creating dcdc-orders collection reference');
-          const ordersRef = collection(db, 'dcdc-orders');
-          console.log('8. Collection reference created:', ordersRef);
-          
-          console.log('9. Attempting to add document to dcdc-orders');
-          const docRef = await addDoc(ordersRef, orderData);
-          console.log('10. Document successfully added with ID:', docRef.id);
+        console.log('7. Creating dcdc-orders collection reference');
+        const ordersRef = collection(db, 'dcdc-orders');
+        console.log('8. Collection reference created:', ordersRef);
+        
+        console.log('9. Attempting to add document to dcdc-orders');
+        const docRef = await addDoc(ordersRef, orderData);
+        console.log('10. Document successfully added with ID:', docRef.id);
     
-          localStorage.removeItem('cart');
-          setCartItems([]);
-          alert(`Thank you for your order! Your order ID is: ${docRef.id}`);
-    
-        } catch (firestoreError) {
-          console.error('Firestore Error Details:', {
-            name: firestoreError.name,
-            code: firestoreError.code,
-            message: firestoreError.message,
-            stack: firestoreError.stack,
-            raw: JSON.stringify(firestoreError)
-          });
-          throw firestoreError;
-        }
+        localStorage.removeItem('cart');
+        setCartItems([]);
+        alert(`Thank you for your order! Your order ID is: ${docRef.id}`);
     
       } catch (error) {
-        console.error('Main Error Details:', {
-          error: error,
-          type: error.constructor.name,
-          message: error.message,
-          stack: error.stack
+        console.error('Error Details:', {
+          name: error instanceof FirebaseError ? error.name : 'Unknown',
+          code: error instanceof FirebaseError ? error.code : 'Unknown',
+          message: error instanceof Error ? error.message : 'Unknown error',
+          stack: error instanceof Error ? error.stack : 'No stack trace',
+          raw: JSON.stringify(error)
         });
+        
         alert('There was an error processing your order. The payment was successful, but there was an error saving the order details. Please save your PayPal confirmation and contact support.');
       } finally {
         setIsProcessing(false);
