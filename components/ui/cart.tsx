@@ -228,7 +228,7 @@ const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             name="firstName"
             value={customerInfo.firstName}
             onChange={handleInputChange}
-            className="w-full border border-gray-300 rounded-md p-2"
+            className="w-full border border-gray-300 rounded-md p-2 text-black"
             required
           />
         </div>
@@ -241,7 +241,7 @@ const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             name="lastName"
             value={customerInfo.lastName}
             onChange={handleInputChange}
-            className="w-full border border-gray-300 rounded-md p-2"
+            className="w-full border border-gray-300 rounded-md p-2 text-black"
             required
           />
         </div>
@@ -254,7 +254,7 @@ const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             name="email"
             value={customerInfo.email}
             onChange={handleInputChange}
-            className="w-full border border-gray-300 rounded-md p-2"
+            className="w-full border border-gray-300 rounded-md p-2 text-black"
             required
           />
         </div>
@@ -267,7 +267,7 @@ const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             name="phone"
             value={customerInfo.phone}
             onChange={handleInputChange}
-            className="w-full border border-gray-300 rounded-md p-2"
+            className="w-full border border-gray-300 rounded-md p-2 text-black"
             required
           />
         </div>
@@ -280,7 +280,7 @@ const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             name="dancerName"
             value={customerInfo.dancerName}
             onChange={handleInputChange}
-            className="w-full border border-gray-300 rounded-md p-2"
+            className="w-full border border-gray-300 rounded-md p-2 text-black"
             required
           />
         </div>
