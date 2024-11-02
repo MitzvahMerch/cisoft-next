@@ -139,75 +139,85 @@ const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   
   setFormComplete(validateForm());
 };
-  useEffect(() => {
-    if (!paypalButtonRef.current || !cartItems.length || !window.paypal || !formComplete) return;
+useEffect(() => {
+  if (!paypalButtonRef.current || !cartItems.length || !window.paypal || !formComplete) return;
 
-    paypalButtonRef.current.innerHTML = '';
+  // Store the current container reference
+  const container = paypalButtonRef.current;
+  
+  const buttons = window.paypal.Buttons({
+    createOrder: (data: PayPalOrderData, actions: PayPalActions) => {
+      return actions.order.create({
+        purchase_units: [{
+          amount: {
+            value: totalPrice.toFixed(2),
+            currency_code: "USD"
+          },
+          description: `DCDC Fundraiser Store Order - ${totalItems} items`
+        }]
+      });
+    },
+    onApprove: async (data: PayPalOrderData, actions: PayPalActions) => {
+      try {
+        setIsProcessing(true);
+        const details = await actions.order.capture();
+        
+        const orderData = {
+          customerInfo,
+          items: cartItems.map(item => ({
+            productId: item.productId,
+            productName: item.productName,
+            price: item.price,
+            sizes: item.sizes,
+            totalQuantity: item.sizes.reduce((sum, size) => sum + size.quantity, 0),
+            itemTotal: item.price * item.sizes.reduce((sum, size) => sum + size.quantity, 0)
+          })),
+          orderSummary: {
+            totalAmount: totalPrice,
+            totalItems: totalItems,
+            currency: 'USD'
+          },
+          paymentDetails: {
+            paypalOrderId: details.id,
+            paymentStatus: details.status,
+            payerEmail: details.payer.email_address,
+            payerName: `${details.payer.name.given_name} ${details.payer.name.surname}`,
+            transactionDate: new Date().toISOString()
+          },
+          orderStatus: 'pending',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
 
-    window.paypal.Buttons({
-      createOrder: (data: PayPalOrderData, actions: PayPalActions) => {
-        return actions.order.create({
-          purchase_units: [{
-            amount: {
-              value: totalPrice.toFixed(2),
-              currency_code: "USD"
-            },
-            description: `DCDC Fundraiser Store Order - ${totalItems} items`
-          }]
-        });
-      },
-      onApprove: async (data: PayPalOrderData, actions: PayPalActions) => {
-        try {
-          setIsProcessing(true);
-          const details = await actions.order.capture();
-          
-          const orderData = {
-            customerInfo: customerInfo, // Add customer information
-            items: cartItems.map(item => ({
-              productId: item.productId,
-              productName: item.productName,
-              price: item.price,
-              sizes: item.sizes,
-              totalQuantity: item.sizes.reduce((sum, size) => sum + size.quantity, 0),
-              itemTotal: item.price * item.sizes.reduce((sum, size) => sum + size.quantity, 0)
-            })),
-            orderSummary: {
-              totalAmount: totalPrice,
-              totalItems: totalItems,
-              currency: 'USD'
-            },
-            paymentDetails: {
-              paypalOrderId: details.id,
-              paymentStatus: details.status,
-              payerEmail: details.payer.email_address,
-              payerName: `${details.payer.name.given_name} ${details.payer.name.surname}`,
-              transactionDate: new Date().toISOString()
-            },
-            shippingAddress: {
-              fullName: details.purchase_units[0].shipping.name.full_name,
-              address: details.purchase_units[0].shipping.address
-            },
-            orderStatus: 'pending',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          };
+        const ordersRef = collection(db, 'orders');
+        const docRef = await addDoc(ordersRef, orderData);
 
-          const ordersRef = collection(db, 'orders');
-          const docRef = await addDoc(ordersRef, orderData);
+        localStorage.removeItem('cart');
+        setCartItems([]);
 
-          localStorage.removeItem('cart');
-          setCartItems([]);
-
-          alert(`Thank you for your order! Your order ID is: ${docRef.id}`);
-        } catch (error) {
-          console.error('Error processing order:', error);
-          alert('There was an error processing your order. Please try again.');
-        } finally {
-          setIsProcessing(false);
-        }
+        alert(`Thank you for your order! Your order ID is: ${docRef.id}`);
+      } catch (error) {
+        console.error('Error processing order:', error);
+        alert('Your payment was processed but there was an error saving the order. Our team will contact you to confirm.');
+      } finally {
+        setIsProcessing(false);
       }
-    }).render(paypalButtonRef.current);
-  }, [cartItems, totalItems, totalPrice, formComplete, customerInfo]); // Added form dependencies
+    }
+  });
+
+  buttons.render(container);
+
+  // Cleanup function
+  return () => {
+    try {
+      if (container) {
+        container.innerHTML = '';
+      }
+    } catch (err) {
+      console.error('Error cleaning up PayPal buttons:', err);
+    }
+  };
+}, [cartItems, totalItems, totalPrice, formComplete, customerInfo]);
 
   const removeItem = (productId: string) => {
     const newCart = cartItems.filter(item => item.productId !== productId);
