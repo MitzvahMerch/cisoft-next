@@ -26,13 +26,7 @@ interface CustomerInfo {
   lastName: string;
   email: string;
   phone: string;
-  address: {
-    street: string;
-    apartment?: string;
-    city: string;
-    state: string;
-    zipCode: string;
-  };
+  dancerName: string;
 }
 
 interface PayPalOrderData {
@@ -103,13 +97,7 @@ const CartPage = () => {
     lastName: '',
     email: '',
     phone: '',
-    address: {
-      street: '',
-      apartment: '',
-      city: '',
-      state: '',
-      zipCode: ''
-    }
+    dancerName: ''
   });
 
   const totalPrice = cartItems.reduce((total, item) => {
@@ -128,42 +116,26 @@ const CartPage = () => {
     }
   }, []);
 
-  // Validate form fields
-  const validateForm = () => {
-    const { firstName, lastName, email, phone, address } = customerInfo;
-    const { street, city, state, zipCode } = address;
-    
-    return (
-      firstName.trim() !== '' &&
-      lastName.trim() !== '' &&
-      email.trim() !== '' &&
-      phone.trim() !== '' &&
-      street.trim() !== '' &&
-      city.trim() !== '' &&
-      state.trim() !== '' &&
-      zipCode.trim() !== ''
-    );
-  };
+// Validate form fields
+const validateForm = () => {
+  const { firstName, lastName, email, phone, dancerName } = customerInfo;
+  
+  return (
+    firstName.trim() !== '' &&
+    lastName.trim() !== '' &&
+    email.trim() !== '' &&
+    phone.trim() !== '' &&
+    dancerName.trim() !== ''
+  );
+};
 
 // Handle form input changes
 const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   const { name, value } = e.target;
-  
-  if (name.includes('.')) {
-    const [, child] = name.split('.');  // Use comma to skip the first element
-    setCustomerInfo(prev => ({
-      ...prev,
-      address: {
-        ...prev.address,
-        [child]: value
-      }
-    }));
-  } else {
-    setCustomerInfo(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  }
+  setCustomerInfo(prev => ({
+    ...prev,
+    [name]: value
+  }));
   
   setFormComplete(validateForm());
 };
@@ -245,7 +217,7 @@ const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
   const renderCustomerForm = () => (
     <div className="mb-8">
-      <h2 className="text-xl font-semibold mb-4">Customer Information</h2>
+      <h2 className="text-xl font-semibold mb-4 text-black">Customer Information</h2>
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -301,63 +273,12 @@ const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         </div>
         <div className="col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Street Address
+            Dancer's Name
           </label>
           <input
             type="text"
-            name="address.street"
-            value={customerInfo.address.street}
-            onChange={handleInputChange}
-            className="w-full border border-gray-300 rounded-md p-2"
-            required
-          />
-        </div>
-        <div className="col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Apartment, suite, etc. (optional)
-          </label>
-          <input
-            type="text"
-            name="address.apartment"
-            value={customerInfo.address.apartment}
-            onChange={handleInputChange}
-            className="w-full border border-gray-300 rounded-md p-2"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            City
-          </label>
-          <input
-            type="text"
-            name="address.city"
-            value={customerInfo.address.city}
-            onChange={handleInputChange}
-            className="w-full border border-gray-300 rounded-md p-2"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            State
-          </label>
-          <input
-            type="text"
-            name="address.state"
-            value={customerInfo.address.state}
-            onChange={handleInputChange}
-            className="w-full border border-gray-300 rounded-md p-2"
-            required
-          />
-        </div>
-        <div className="col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            ZIP Code
-          </label>
-          <input
-            type="text"
-            name="address.zipCode"
-            value={customerInfo.address.zipCode}
+            name="dancerName"
+            value={customerInfo.dancerName}
             onChange={handleInputChange}
             className="w-full border border-gray-300 rounded-md p-2"
             required
