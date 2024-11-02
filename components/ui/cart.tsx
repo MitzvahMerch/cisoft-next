@@ -160,8 +160,11 @@ useEffect(() => {
     onApprove: async (data: PayPalOrderData, actions: PayPalActions) => {
       try {
         setIsProcessing(true);
+        console.log('1. Starting PayPal approval process');
+    
         const details = await actions.order.capture();
-        
+        console.log('2. PayPal capture successful:', details);
+    
         const orderData = {
           customerInfo,
           items: cartItems.map(item => ({
@@ -188,18 +191,48 @@ useEffect(() => {
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         };
-
-        // In your onApprove function, change:
-const ordersRef = collection(db, 'dcdc-orders');  // Changed from 'orders'
-        const docRef = await addDoc(ordersRef, orderData);
-
-        localStorage.removeItem('cart');
-        setCartItems([]);
-
-        alert(`Thank you for your order! Your order ID is: ${docRef.id}`);
+    
+        console.log('3. Order data prepared:', orderData);
+        console.log('4. Database instance:', db);
+    
+        try {
+          // Test writing to a different collection first
+          console.log('5. Testing write to sessions collection');
+          const testRef = collection(db, 'sessions');
+          const testDoc = await addDoc(testRef, { test: true });
+          console.log('6. Test write successful:', testDoc.id);
+    
+          console.log('7. Creating dcdc-orders collection reference');
+          const ordersRef = collection(db, 'dcdc-orders');
+          console.log('8. Collection reference created:', ordersRef);
+          
+          console.log('9. Attempting to add document to dcdc-orders');
+          const docRef = await addDoc(ordersRef, orderData);
+          console.log('10. Document successfully added with ID:', docRef.id);
+    
+          localStorage.removeItem('cart');
+          setCartItems([]);
+          alert(`Thank you for your order! Your order ID is: ${docRef.id}`);
+    
+        } catch (firestoreError) {
+          console.error('Firestore Error Details:', {
+            name: firestoreError.name,
+            code: firestoreError.code,
+            message: firestoreError.message,
+            stack: firestoreError.stack,
+            raw: JSON.stringify(firestoreError)
+          });
+          throw firestoreError;
+        }
+    
       } catch (error) {
-        console.error('Error processing order:', error);
-        alert('Your payment was processed but there was an error saving the order. Our team will contact you to confirm.');
+        console.error('Main Error Details:', {
+          error: error,
+          type: error.constructor.name,
+          message: error.message,
+          stack: error.stack
+        });
+        alert('There was an error processing your order. The payment was successful, but there was an error saving the order details. Please save your PayPal confirmation and contact support.');
       } finally {
         setIsProcessing(false);
       }
