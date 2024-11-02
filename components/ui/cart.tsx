@@ -273,7 +273,7 @@ const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         </div>
         <div className="col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Dancer's Name
+            Dancer&apos;s Name
           </label>
           <input
             type="text"
