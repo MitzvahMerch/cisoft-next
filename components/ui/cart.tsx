@@ -189,7 +189,7 @@ useEffect(() => {
           updatedAt: new Date().toISOString()
         };
 
-        const ordersRef = collection(db, 'orders');
+        const ordersRef = collection(db, 'dcdc-orders'); // Changed from 'orders' to 'dcdc-orders'
         const docRef = await addDoc(ordersRef, orderData);
 
         localStorage.removeItem('cart');
