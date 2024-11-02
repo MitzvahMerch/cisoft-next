@@ -150,7 +150,7 @@ const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   const { name, value } = e.target;
   
   if (name.includes('.')) {
-    const [parent, child] = name.split('.');
+    const [, child] = name.split('.');  // Use comma to skip the first element
     setCustomerInfo(prev => ({
       ...prev,
       address: {
