@@ -21,6 +21,20 @@ interface CartItem {
   image: string;
 }
 
+interface CustomerInfo {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address: {
+    street: string;
+    apartment?: string;
+    city: string;
+    state: string;
+    zipCode: string;
+  };
+}
+
 interface PayPalOrderData {
   orderID: string;
 }
@@ -82,7 +96,21 @@ declare global {
 const CartPage = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [formComplete, setFormComplete] = useState(false);
   const paypalButtonRef = useRef<HTMLDivElement>(null);
+  const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    address: {
+      street: '',
+      apartment: '',
+      city: '',
+      state: '',
+      zipCode: ''
+    }
+  });
 
   const totalPrice = cartItems.reduce((total, item) => {
     const itemTotal = item.sizes.reduce((sum, size) => sum + (size.quantity * item.price), 0);
@@ -100,8 +128,47 @@ const CartPage = () => {
     }
   }, []);
 
+  // Validate form fields
+  const validateForm = () => {
+    const { firstName, lastName, email, phone, address } = customerInfo;
+    const { street, city, state, zipCode } = address;
+    
+    return (
+      firstName.trim() !== '' &&
+      lastName.trim() !== '' &&
+      email.trim() !== '' &&
+      phone.trim() !== '' &&
+      street.trim() !== '' &&
+      city.trim() !== '' &&
+      state.trim() !== '' &&
+      zipCode.trim() !== ''
+    );
+  };
+
+// Handle form input changes
+const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const { name, value } = e.target;
+  
+  if (name.includes('.')) {
+    const [parent, child] = name.split('.');
+    setCustomerInfo(prev => ({
+      ...prev,
+      address: {
+        ...prev.address,
+        [child]: value
+      }
+    }));
+  } else {
+    setCustomerInfo(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  }
+  
+  setFormComplete(validateForm());
+};
   useEffect(() => {
-    if (!paypalButtonRef.current || !cartItems.length || !window.paypal) return;
+    if (!paypalButtonRef.current || !cartItems.length || !window.paypal || !formComplete) return;
 
     paypalButtonRef.current.innerHTML = '';
 
@@ -123,6 +190,7 @@ const CartPage = () => {
           const details = await actions.order.capture();
           
           const orderData = {
+            customerInfo: customerInfo, // Add customer information
             items: cartItems.map(item => ({
               productId: item.productId,
               productName: item.productName,
@@ -167,13 +235,137 @@ const CartPage = () => {
         }
       }
     }).render(paypalButtonRef.current);
-  }, [cartItems, totalItems, totalPrice]); // Added missing dependencies
+  }, [cartItems, totalItems, totalPrice, formComplete, customerInfo]); // Added form dependencies
 
   const removeItem = (productId: string) => {
     const newCart = cartItems.filter(item => item.productId !== productId);
     setCartItems(newCart);
     localStorage.setItem('cart', JSON.stringify(newCart));
   };
+
+  const renderCustomerForm = () => (
+    <div className="mb-8">
+      <h2 className="text-xl font-semibold mb-4">Customer Information</h2>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            First Name
+          </label>
+          <input
+            type="text"
+            name="firstName"
+            value={customerInfo.firstName}
+            onChange={handleInputChange}
+            className="w-full border border-gray-300 rounded-md p-2"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Last Name
+          </label>
+          <input
+            type="text"
+            name="lastName"
+            value={customerInfo.lastName}
+            onChange={handleInputChange}
+            className="w-full border border-gray-300 rounded-md p-2"
+            required
+          />
+        </div>
+        <div className="col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Email
+          </label>
+          <input
+            type="email"
+            name="email"
+            value={customerInfo.email}
+            onChange={handleInputChange}
+            className="w-full border border-gray-300 rounded-md p-2"
+            required
+          />
+        </div>
+        <div className="col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Phone
+          </label>
+          <input
+            type="tel"
+            name="phone"
+            value={customerInfo.phone}
+            onChange={handleInputChange}
+            className="w-full border border-gray-300 rounded-md p-2"
+            required
+          />
+        </div>
+        <div className="col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Street Address
+          </label>
+          <input
+            type="text"
+            name="address.street"
+            value={customerInfo.address.street}
+            onChange={handleInputChange}
+            className="w-full border border-gray-300 rounded-md p-2"
+            required
+          />
+        </div>
+        <div className="col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Apartment, suite, etc. (optional)
+          </label>
+          <input
+            type="text"
+            name="address.apartment"
+            value={customerInfo.address.apartment}
+            onChange={handleInputChange}
+            className="w-full border border-gray-300 rounded-md p-2"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            City
+          </label>
+          <input
+            type="text"
+            name="address.city"
+            value={customerInfo.address.city}
+            onChange={handleInputChange}
+            className="w-full border border-gray-300 rounded-md p-2"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            State
+          </label>
+          <input
+            type="text"
+            name="address.state"
+            value={customerInfo.address.state}
+            onChange={handleInputChange}
+            className="w-full border border-gray-300 rounded-md p-2"
+            required
+          />
+        </div>
+        <div className="col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            ZIP Code
+          </label>
+          <input
+            type="text"
+            name="address.zipCode"
+            value={customerInfo.address.zipCode}
+            onChange={handleInputChange}
+            className="w-full border border-gray-300 rounded-md p-2"
+            required
+          />
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#DAC2A8' }}>
@@ -272,18 +464,24 @@ const CartPage = () => {
                   ))}
                 </div>
 
-                {/* Cart Summary and PayPal Integration */}
+                {/* Customer Form and Cart Summary */}
                 <div className="mt-8 border-t pt-6">
+                  {renderCustomerForm()}
                   <div className="flex justify-between text-xl font-bold text-black mb-6">
                     <span>Total</span>
                     <span>${totalPrice.toFixed(2)}</span>
                   </div>
                   
-                  {/* PayPal Button Container */}
-                  <div 
-                    ref={paypalButtonRef}
-                    className={`${isProcessing ? 'opacity-50 pointer-events-none' : ''}`}
-                  />
+                  {formComplete ? (
+                    <div 
+                      ref={paypalButtonRef}
+                      className={`${isProcessing ? 'opacity-50 pointer-events-none' : ''}`}
+                    />
+                  ) : (
+                    <div className="text-center text-gray-600 my-4">
+                      Please complete all required fields to proceed with payment
+                    </div>
+                  )}
 
                   {isProcessing && (
                     <div className="text-center mt-4 text-gray-600">
