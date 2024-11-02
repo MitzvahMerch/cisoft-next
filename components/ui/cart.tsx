@@ -189,7 +189,8 @@ useEffect(() => {
           updatedAt: new Date().toISOString()
         };
 
-        const ordersRef = collection(db, 'dcdc-orders'); // Changed from 'orders' to 'dcdc-orders'
+        // In your onApprove function, change:
+const ordersRef = collection(db, 'dcdc-orders');  // Changed from 'orders'
         const docRef = await addDoc(ordersRef, orderData);
 
         localStorage.removeItem('cart');
