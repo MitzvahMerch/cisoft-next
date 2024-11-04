@@ -213,7 +213,7 @@ useEffect(() => {
     // Add this after line 10 "Document successfully added..."
 console.log('11. Sending confirmation email...');
 await resend.emails.send({
-  from: 'DCDC Fundraiser Store <onboarding@resend.dev>',
+  from: 'DCDC Fundraiser Store <orders@potomacimprints.com>',
   to: customerInfo.email,
   subject: `DCDC Fundraiser Order Confirmation - ${docRef.id}`,
   html: `
