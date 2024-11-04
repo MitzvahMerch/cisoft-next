@@ -1,9 +1,53 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
-// Define types for the expected request body
+// Define detailed types for the order details
+interface Size {
+  size: string;
+  quantity: number;
+}
+
+interface CartItem {
+  productId: string;
+  productName: string;
+  price: number;
+  sizes: Size[];
+  totalQuantity: number;
+  itemTotal: number;
+}
+
+interface OrderSummary {
+  totalAmount: number;
+  totalItems: number;
+  currency: string;
+}
+
+interface PaymentDetails {
+  paypalOrderId: string;
+  paymentStatus: string;
+  payerEmail: string;
+  payerName: string;
+  transactionDate: string;
+}
+
+interface OrderDetails {
+  customerInfo: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    dancerName: string;
+  };
+  items: CartItem[];
+  orderSummary: OrderSummary;
+  paymentDetails: PaymentDetails;
+  orderStatus: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface OrderRequestBody {
-  orderDetails: any;
+  orderDetails: OrderDetails;
   customerInfo: {
     email: string;
     firstName: string;
@@ -27,11 +71,10 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
   try {
-    // Parse and type the request body
     const body: OrderRequestBody = await request.json();
     const { customerInfo, cartItems, orderId, totalPrice } = body;
 
-    const { data, error } = await resend.emails.send({
+    const emailResult = await resend.emails.send({
       from: 'DCDC Fundraiser Store <orders@potomacimprints.com>',
       to: customerInfo.email,
       subject: `DCDC Fundraiser Order Confirmation - ${orderId}`,
@@ -79,12 +122,13 @@ export async function POST(request: NextRequest) {
       `
     });
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    if ('error' in emailResult && emailResult.error) {
+      return NextResponse.json({ error: emailResult.error }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true, data });
+    return NextResponse.json({ success: true, data: emailResult });
   } catch (error) {
+    console.error('Failed to send email:', error);
     return NextResponse.json(
       { error: 'Failed to send email' },
       { status: 500 }
