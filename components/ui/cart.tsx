@@ -8,6 +8,8 @@ import Link from 'next/link';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { FirebaseError } from 'firebase/app';
+import { Resend } from 'resend';
+const resend = new Resend(process.env.NEXT_PUBLIC_RESEND_API_KEY);
 
 interface SizeQuantity {
   size: string;
@@ -208,10 +210,59 @@ useEffect(() => {
         console.log('9. Attempting to add document to dcdc-orders');
         const docRef = await addDoc(ordersRef, orderData);
         console.log('10. Document successfully added with ID:', docRef.id);
-    
+    // Add this after line 10 "Document successfully added..."
+console.log('11. Sending confirmation email...');
+await resend.emails.send({
+  from: 'DCDC Fundraiser Store <onboarding@resend.dev>',
+  to: customerInfo.email,
+  subject: `DCDC Fundraiser Order Confirmation - ${docRef.id}`,
+  html: `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h1 style="color: #333;">Thanks for your DCDC Fundraiser order!</h1>
+      
+      <div style="background-color: #f7f7f7; padding: 20px; border-radius: 5px; margin: 20px 0;">
+        <p><strong>Order ID:</strong> ${docRef.id}</p>
+        <p><strong>Order Date:</strong> ${new Date().toLocaleDateString()}</p>
+        <p><strong>Dancer's Name:</strong> ${customerInfo.dancerName}</p>
+      </div>
+
+      <h2 style="color: #444;">Order Summary:</h2>
+      ${cartItems.map(item => `
+        <div style="border-bottom: 1px solid #eee; padding: 10px 0;">
+          <h3 style="margin: 0; color: #333;">${item.productName}</h3>
+          <div style="color: #666; margin: 5px 0;">
+            ${item.sizes.map(size => 
+              `<div>${size.size}: ${size.quantity}</div>`
+            ).join('')}
+          </div>
+          <p style="margin: 5px 0; font-weight: bold; color: #333;">
+            $${(item.price * item.sizes.reduce((sum, size) => sum + size.quantity, 0)).toFixed(2)}
+          </p>
+        </div>
+      `).join('')}
+
+      <div style="background-color: #f7f7f7; padding: 15px; border-radius: 5px; margin-top: 20px;">
+        <h3 style="margin: 0; color: #333;">Total: $${totalPrice.toFixed(2)}</h3>
+      </div>
+
+      <div style="margin-top: 30px; color: #666;">
+        <h3 style="color: #333;">Customer Information</h3>
+        <p><strong>Name:</strong> ${customerInfo.firstName} ${customerInfo.lastName}</p>
+        <p><strong>Email:</strong> ${customerInfo.email}</p>
+        <p><strong>Phone:</strong> ${customerInfo.phone}</p>
+      </div>
+
+      <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; text-align: center; color: #666;">
+        <p>Thank you for supporting DCDC!</p>
+        <p>If you have any questions about your order, please contact us.</p>
+      </div>
+    </div>
+  `
+});
+console.log('12. Confirmation email sent');
         localStorage.removeItem('cart');
         setCartItems([]);
-        alert(`Thank you for your order! Your order ID is: ${docRef.id}`);
+        alert(`Thank you for your order! Your order ID is: ${docRef.id}. A confirmation email has been sent to ${customerInfo.email}`);
     
       } catch (error) {
         console.error('Error Details:', {
