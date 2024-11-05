@@ -202,34 +202,35 @@ const ProductGallery = () => {
           </div>
         </div>
 
-        {/* Promotional Banner */}
-        <div className="mt-12 mb-8 bg-white/90 rounded-lg p-6 max-w-4xl mx-auto shadow-lg">
-          <h2 className="text-2xl font-bold text-black text-center mb-4">
-            Need a Custom Fundraising Store for Your Organization?
-          </h2>
-          <p className="text-lg text-gray-700 text-center mb-6">
-            We build free custom online stores for dance teams, sports teams, schools, and organizations!
-          </p>
-          <div className="text-center space-y-2">
-            <p className="text-lg text-gray-700">Contact us to get started:</p>
-            <p>
-              <a 
-                href="mailto:potomacimprints@gmail.com" 
-                className="text-lg text-blue-600 hover:text-blue-800 font-medium"
-              >
-                potomacimprints@gmail.com
-              </a>
-            </p>
-            <p>
-              <a 
-                href="tel:3018075747" 
-                className="text-lg text-blue-600 hover:text-blue-800 font-medium"
-              >
-                (301) 807-5747
-              </a>
-            </p>
-          </div>
-        </div>
+{/* Promotional Banner */}
+<div className="mt-12 mb-8 rounded-lg p-6 max-w-4xl mx-auto shadow-lg" style={{ backgroundColor: '#992F22' }}>
+  <h2 className="text-2xl font-bold text-white text-center mb-4">
+    Need a Custom Fundraising Store for Your Organization?
+  </h2>
+  <p className="text-lg text-white text-center mb-6">
+    We build free custom online stores for dance teams, sports teams, schools, and organizations!
+  </p>
+  <div className="text-center space-y-2">
+    <p className="text-lg text-white">Contact us to get started:</p>
+    <p>
+      <a 
+        href="mailto:potomacimprints@gmail.com" 
+        className="text-lg text-blue-200 hover:text-blue-400 font-medium"
+      >
+        potomacimprints@gmail.com
+      </a>
+    </p>
+    <p>
+      <a 
+        href="tel:3018075747" 
+        className="text-lg text-blue-200 hover:text-blue-400 font-medium"
+      >
+        (301) 807-5747
+      </a>
+    </p>
+  </div>
+</div>
+
       </main>
     </div>
   );
