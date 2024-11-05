@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Minus, ShoppingCart } from 'lucide-react';
+import { Plus, Minus, ShoppingCart, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
 
 interface SizeQuantity {
@@ -31,6 +31,7 @@ const DCDCHoodiePage = () => {
     { size: "XXL", quantity: 0 }
   ]);
 
+  const [showingFront, setShowingFront] = useState(true);
   const [addedToCart, setAddedToCart] = useState(false);
 
   const updateQuantity = (size: string, increment: boolean) => {
@@ -69,17 +70,14 @@ const DCDCHoodiePage = () => {
       );
 
       if (existingItemIndex >= 0) {
-        // Merge quantities for existing sizes and add new sizes
         const existingItem = existingCart[existingItemIndex];
         const updatedSizes = [...existingItem.sizes];
 
         newItem.sizes.forEach(newSize => {
           const existingSizeIndex = updatedSizes.findIndex(size => size.size === newSize.size);
           if (existingSizeIndex >= 0) {
-            // Add quantity to existing size
             updatedSizes[existingSizeIndex].quantity += newSize.quantity;
           } else {
-            // Add new size
             updatedSizes.push(newSize);
           }
         });
@@ -89,7 +87,6 @@ const DCDCHoodiePage = () => {
           sizes: updatedSizes
         };
       } else {
-        // Add new item to cart
         existingCart.push(newItem);
       }
 
@@ -143,12 +140,22 @@ const DCDCHoodiePage = () => {
             <div className="w-2/3">
               <div className="relative h-[400px] border-2 border-black">
                 <Image
-                  src="/images/WhiteSweatshirtFront.png"
+                  src={showingFront ? '/images/WhiteSweatshirtFront.png' : '/images/WhiteSweatshirtBack.png'}
                   alt="DCDC Hoodie"
                   fill
                   className="object-contain"
                   priority
                 />
+                <button 
+                  onClick={() => setShowingFront(!showingFront)}
+                  className="absolute bottom-4 right-4 p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition-colors"
+                  aria-label="Flip image"
+                >
+                  <RotateCcw className="h-5 w-5 text-gray-600" />
+                </button>
+                <div className="absolute top-4 right-4 px-2 py-1 bg-white rounded shadow text-sm text-gray-600">
+                  {showingFront ? 'Front' : 'Back'}
+                </div>
               </div>
             </div>
 
