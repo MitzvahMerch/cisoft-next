@@ -70,36 +70,12 @@ const ProductGallery = () => {
       slug: "/DCDCHoodiePage"
     },
     {
-      id: 2,
-      name: "DCDC Black Sweatpants",
-      price: 34.99,
-      image: "/images/DcDcBlack.png",
-      imageScale: "100%",
-      slug: "/DCDCBlackSweatpantsPage"
-    },
-    {
-      id: 3,
-      name: "DCDC Dance Mom Crew",
-      price: 34.99,
-      image: "/images/DanceMomCrew.png",
-      imageScale: "70%",
-      slug: "/DCDCDanceMomCrewPage"
-    },
-    {
       id: 4,
       name: "DCDC Customizable Jersey",
       price: 34.99,
       image: "/images/JerseyExample.png",
       imageScale: "80%",
       slug: "/DCDCCustomizableJerseyPage"
-    },
-    {
-      id: 5,
-      name: "Dance Mom White Sweatpants",
-      price: 34.99,
-      image: "/images/DanceMomSweats.png",
-      imageScale: "100%",
-      slug: "/DanceMomWhiteSweatpantsPage"
     },
     {
       id: 6,
@@ -162,7 +138,7 @@ const ProductGallery = () => {
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {products.map((product) => (
             <Link href={product.slug} key={product.id} className="block">
               <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200 bg-white h-full flex flex-col">
