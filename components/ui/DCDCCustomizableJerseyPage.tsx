@@ -17,6 +17,7 @@ interface CartItem {
   price: number;
   sizes: SizeQuantity[];
   image: string;
+  jerseyName?: string;
 }
 
 const DCDCCustomizableJerseyPage = () => {
@@ -31,6 +32,7 @@ const DCDCCustomizableJerseyPage = () => {
     { size: "XXL", quantity: 0 }
   ]);
 
+  const [jerseyName, setJerseyName] = useState('');
   const [addedToCart, setAddedToCart] = useState(false);
 
   const updateQuantity = (size: string, increment: boolean) => {
@@ -52,20 +54,21 @@ const DCDCCustomizableJerseyPage = () => {
   const addToCart = () => {
     const selectedSizes = sizeSelections.filter(size => size.quantity > 0);
     
-    if (selectedSizes.length === 0) return;
+    if (selectedSizes.length === 0 || !jerseyName.trim()) return;
 
     const newItem: CartItem = {
       productId: 'dcdc-customizable-jersey',
       productName: 'DCDC Customizable Jersey',
       price: 34.99,
       sizes: selectedSizes,
-      image: '/images/JerseyExample.png'
+      image: '/images/JerseyExample.png',
+      jerseyName: jerseyName.trim()
     };
 
     try {
       const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
       const existingItemIndex = existingCart.findIndex(
-        (item: CartItem) => item.productId === newItem.productId
+        (item: CartItem) => item.productId === newItem.productId && item.jerseyName === newItem.jerseyName
       );
 
       if (existingItemIndex >= 0) {
@@ -152,6 +155,21 @@ const DCDCCustomizableJerseyPage = () => {
               <div className="space-y-6">
                 <h1 className="text-2xl font-bold text-black">DCDC Customizable Jersey</h1>
                 <p className="text-xl text-black">$34.99</p>
+
+                <div className="space-y-2">
+                  <label htmlFor="jerseyName" className="block text-sm font-medium text-gray-700">
+                    Name on Jersey Back
+                  </label>
+                  <input
+                    type="text"
+                    id="jerseyName"
+                    value={jerseyName}
+                    onChange={(e) => setJerseyName(e.target.value)}
+                    className="w-full border border-gray-300 rounded-md p-2 text-black"
+                    placeholder="Enter name for jersey"
+                    required
+                  />
+                </div>
                 
                 <div className="grid grid-cols-2 gap-2">
                   {sizeSelections.map((item) => (
@@ -188,7 +206,7 @@ const DCDCCustomizableJerseyPage = () => {
                   <button 
                     onClick={addToCart}
                     className="w-full bg-gray-200 hover:bg-gray-300 p-2 rounded-md text-black disabled:opacity-50"
-                    disabled={totalItems === 0}
+                    disabled={totalItems === 0 || !jerseyName.trim()}
                   >
                     {addedToCart ? 'Added to Cart!' : 'Add to Cart'}
                   </button>
