@@ -22,6 +22,7 @@ interface CartItem {
   price: number;
   sizes: SizeQuantity[];
   image: string;
+  jerseyName?: string;  // Add this line
 }
 
 interface CustomerInfo {
@@ -176,6 +177,7 @@ useEffect(() => {
             productName: item.productName,
             price: item.price,
             sizes: item.sizes,
+            jerseyName: item.jerseyName, // Add this line
             totalQuantity: item.sizes.reduce((sum, size) => sum + size.quantity, 0),
             itemTotal: item.price * item.sizes.reduce((sum, size) => sum + size.quantity, 0)
           })),
@@ -275,11 +277,13 @@ useEffect(() => {
   };
 }, [cartItems, totalItems, totalPrice, formComplete, customerInfo]);
 
-  const removeItem = (productId: string) => {
-    const newCart = cartItems.filter(item => item.productId !== productId);
-    setCartItems(newCart);
-    localStorage.setItem('cart', JSON.stringify(newCart));
-  };
+const removeItem = (productId: string, jerseyName?: string) => {
+  const newCart = cartItems.filter(item => 
+    !(item.productId === productId && item.jerseyName === jerseyName)
+  );
+  setCartItems(newCart);
+  localStorage.setItem('cart', JSON.stringify(newCart));
+};
 
   const renderCustomerForm = () => (
     <div className="mb-8">
@@ -407,7 +411,7 @@ useEffect(() => {
                 {/* Cart Items */}
                 <div className="space-y-6">
                   {cartItems.map((item) => (
-                    <div key={item.productId} className="flex gap-4 p-4 border rounded-lg">
+                    <div key={`${item.productId}-${item.jerseyName || ''}`} className="flex gap-4 p-4 border rounded-lg">
                       {/* Product Image */}
                       <div className="relative w-24 h-24">
                         <Image
@@ -418,17 +422,24 @@ useEffect(() => {
                         />
                       </div>
 
-                      {/* Product Details */}
-                      <div className="flex-1">
-                        <div className="flex justify-between">
-                          <h2 className="font-semibold text-black">{item.productName}</h2>
-                          <button 
-                            onClick={() => removeItem(item.productId)}
-                            className="text-gray-400 hover:text-gray-600"
-                          >
-                            <X size={20} />
-                          </button>
-                        </div>
+    {/* Product Details */}
+    <div className="flex-1">
+      <div className="flex justify-between">
+        <div>
+          <h2 className="font-semibold text-black">{item.productName}</h2>
+          {item.jerseyName && (
+            <p className="text-sm text-gray-600 mt-1">
+              Jersey Name: {item.jerseyName}
+            </p>
+          )}
+        </div>
+        <button 
+          onClick={() => removeItem(item.productId, item.jerseyName)}
+          className="text-gray-400 hover:text-gray-600"
+        >
+          <X size={20} />
+        </button>
+      </div>
                         
                         {/* Size Quantities */}
                         <div className="mt-2 space-y-1">
