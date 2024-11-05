@@ -47,7 +47,7 @@ const DCDCHoodiePage = () => {
   };
 
   const totalItems = sizeSelections.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = totalItems * 34.99;
+  const totalPrice = totalItems * 36.00;
 
   const addToCart = () => {
     const selectedSizes = sizeSelections.filter(size => size.quantity > 0);
@@ -57,7 +57,7 @@ const DCDCHoodiePage = () => {
     const newItem: CartItem = {
       productId: 'dcdc-hoodie',
       productName: 'DCDC Hoodie',
-      price: 34.99,
+      price: 36.00,
       sizes: selectedSizes,
       image: '/images/WhiteSweatshirtFront.png'
     };
@@ -155,7 +155,7 @@ const DCDCHoodiePage = () => {
             <div className="w-1/3">
               <div className="space-y-6">
                 <h1 className="text-2xl font-bold text-black">DCDC Hoodie</h1>
-                <p className="text-xl text-black">$34.99</p>
+                <p className="text-xl text-black">$36.00</p>
                 
                 <div className="grid grid-cols-2 gap-2">
                   {sizeSelections.map((item) => (

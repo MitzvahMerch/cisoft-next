@@ -60,7 +60,7 @@ const ProductGallery = () => {
     {
       id: 1,
       name: "DCDC Hoodie",
-      price: 34.99,
+      price: 36.00,
       images: {
         front: "/images/WhiteSweatshirtFront.png",
         back: "/images/WhiteSweatshirtBack.png"
@@ -72,7 +72,7 @@ const ProductGallery = () => {
     {
       id: 4,
       name: "DCDC Customizable Jersey",
-      price: 34.99,
+      price: 36.00,
       image: "/images/JerseyExample.png",
       imageScale: "80%",
       slug: "/DCDCCustomizableJerseyPage"
@@ -80,7 +80,7 @@ const ProductGallery = () => {
     {
       id: 6,
       name: "DCDC White Sweatpants",
-      price: 34.99,
+      price: 36.00,
       image: "/images/TeamDcDcWhite.png",
       imageScale: "100%",
       slug: "/DCDCWhiteSweatpantsPage"

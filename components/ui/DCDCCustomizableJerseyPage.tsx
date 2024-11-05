@@ -49,7 +49,7 @@ const DCDCCustomizableJerseyPage = () => {
   };
 
   const totalItems = sizeSelections.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = totalItems * 34.99;
+  const totalPrice = totalItems * 36.00;
 
   const addToCart = () => {
     const selectedSizes = sizeSelections.filter(size => size.quantity > 0);
@@ -59,7 +59,7 @@ const DCDCCustomizableJerseyPage = () => {
     const newItem: CartItem = {
       productId: 'dcdc-customizable-jersey',
       productName: 'DCDC Customizable Jersey',
-      price: 34.99,
+      price: 36.00,
       sizes: selectedSizes,
       image: '/images/JerseyExample.png',
       jerseyName: jerseyName.trim()
@@ -154,7 +154,7 @@ const DCDCCustomizableJerseyPage = () => {
             <div className="w-1/3">
               <div className="space-y-6">
                 <h1 className="text-2xl font-bold text-black">DCDC Customizable Jersey</h1>
-                <p className="text-xl text-black">$34.99</p>
+                <p className="text-xl text-black">$36.00</p>
 
                 <div className="space-y-2">
                   <label htmlFor="jerseyName" className="block text-sm font-medium text-gray-700">
