@@ -25,16 +25,21 @@ interface Product {
 const ProductGallery = () => {
   const [showHoodieBack, setShowHoodieBack] = useState(false);
   const [timeLeft, setTimeLeft] = useState({
-    days: 19,
-    hours: 23,
-    minutes: 59
+    days: 14,
+    hours: 0,
+    minutes: 0
   });
+
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      const endDate = new Date();
-      endDate.setDate(endDate.getDate() + 19);
-      endDate.setHours(23, 59, 59, 999);
+      // Get tonight at midnight
+      const tonight = new Date();
+      tonight.setHours(24, 0, 0, 0);
+      
+      // Set end date to 14 days from tonight at midnight
+      const endDate = new Date(tonight);
+      endDate.setDate(endDate.getDate() + 14);
 
       const now = new Date();
       const difference = endDate.getTime() - now.getTime();
@@ -51,7 +56,7 @@ const ProductGallery = () => {
     };
 
     calculateTimeLeft();
-    const timer = setInterval(calculateTimeLeft, 60000);
+    const timer = setInterval(calculateTimeLeft, 60000); // Update every minute
 
     return () => clearInterval(timer);
   }, []);
