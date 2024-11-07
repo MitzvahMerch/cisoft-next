@@ -171,20 +171,23 @@ useEffect(() => {
         console.log('2. PayPal capture successful:', details);
     
         const orderData = {
-          customerInfo,
+          customerInfo: {
+            ...customerInfo,  // This includes the dancerName from the form
+          },
           items: cartItems.map(item => ({
             productId: item.productId,
             productName: item.productName,
             price: item.price,
             sizes: item.sizes,
-            jerseyName: item.jerseyName,
+            jerseyName: item.jerseyName || null,  // Make explicit that non-jersey items don't have this
             totalQuantity: item.sizes.reduce((sum, size) => sum + size.quantity, 0),
             itemTotal: item.price * item.sizes.reduce((sum, size) => sum + size.quantity, 0)
           })),
           orderSummary: {
             totalAmount: Number(totalPrice.toFixed(2)),
             totalItems,
-            currency: 'USD'
+            currency: 'USD',
+            dancerName: customerInfo.dancerName  // Add dancer's name at the order level
           },
           paymentDetails: {
             paypalOrderId: details.id,
@@ -194,10 +197,11 @@ useEffect(() => {
             transactionDate: new Date().toISOString()
           },
           orderStatus: 'pending',
+          dancerName: customerInfo.dancerName,  // Add it here too for top-level access
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         };
-    
+        
         // Direct write to dcdc-orders
         const ordersRef = collection(db, 'dcdc-orders');
         const docRef = await addDoc(ordersRef, orderData);
