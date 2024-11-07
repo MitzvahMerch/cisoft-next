@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { X } from 'lucide-react';
 import Link from 'next/link';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, writeBatch, doc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { FirebaseError } from 'firebase/app';
 
@@ -169,7 +169,24 @@ useEffect(() => {
     
         const details = await actions.order.capture();
         console.log('2. PayPal capture successful:', details);
+
+        // Create a backup of the order first
+        const backupRef = collection(db, 'order-backups');
+        const backupData = {
+          timestamp: new Date().toISOString(),
+          paypalDetails: details,
+          orderData: {
+            customerInfo,
+            items: cartItems,
+            totalPrice,
+            totalItems
+          }
+        };
+        
+        await addDoc(backupRef, backupData);
+        console.log('Backup created successfully');
     
+        // Prepare order data with more specific typing
         const orderData = {
           customerInfo,
           items: cartItems.map(item => ({
@@ -177,13 +194,13 @@ useEffect(() => {
             productName: item.productName,
             price: item.price,
             sizes: item.sizes,
-            jerseyName: item.jerseyName, // Add this line
+            jerseyName: item.jerseyName,
             totalQuantity: item.sizes.reduce((sum, size) => sum + size.quantity, 0),
             itemTotal: item.price * item.sizes.reduce((sum, size) => sum + size.quantity, 0)
           })),
           orderSummary: {
-            totalAmount: totalPrice,
-            totalItems: totalItems,
+            totalAmount: Number(totalPrice.toFixed(2)), // Ensure it's a number
+            totalItems,
             currency: 'USD'
           },
           paymentDetails: {
@@ -199,23 +216,22 @@ useEffect(() => {
         };
     
         console.log('3. Order data prepared:', orderData);
-    
-        // Test writing to a different collection first
-        console.log('5. Testing write to sessions collection');
-        const testRef = collection(db, 'sessions');
-        const testDoc = await addDoc(testRef, { test: true });
-        console.log('6. Test write successful:', testDoc.id);
-    
-        console.log('7. Creating dcdc-orders collection reference');
-        const ordersRef = collection(db, 'dcdc-orders');
-        console.log('8. Collection reference created:', ordersRef);
         
-        console.log('9. Attempting to add document to dcdc-orders');
-        const docRef = await addDoc(ordersRef, orderData);
-        console.log('10. Document successfully added with ID:', docRef.id);
+        // Try to write the order using a batch
+        const batch = writeBatch(db);
+        
+        // Create a new document reference
+        const ordersRef = collection(db, 'dcdc-orders');
+        const newOrderRef = doc(ordersRef);
+        
+        // Set the order data
+        batch.set(newOrderRef, orderData);
+        
+        // Commit the batch
+        await batch.commit();
+        console.log('10. Order successfully saved with ID:', newOrderRef.id);
     
-        // New email sending code
-        console.log('11. Sending confirmation email...');
+        // Continue with email sending...
         try {
           const emailResponse = await fetch('/api/send-order-confirmation', {
             method: 'POST',
@@ -226,26 +242,24 @@ useEffect(() => {
               orderDetails: orderData,
               customerInfo,
               cartItems,
-              orderId: docRef.id,
+              orderId: newOrderRef.id,
               totalPrice
             }),
           });
     
           if (!emailResponse.ok) {
             console.error('Failed to send confirmation email');
-            // Continue with the order process even if email fails
           } else {
             console.log('12. Confirmation email sent');
           }
         } catch (emailError) {
           console.error('Error sending confirmation email:', emailError);
-          // Continue with the order process even if email fails
         }
     
-        // Clear cart and show success message
+        // Clear cart and show success
         localStorage.removeItem('cart');
         setCartItems([]);
-        alert(`Thank you for your order! Your order ID is: ${docRef.id}. A confirmation email has been sent to ${customerInfo.email}`);
+        alert(`Thank you for your order! Your order ID is: ${newOrderRef.id}. A confirmation email will be sent to ${customerInfo.email}`);
     
       } catch (error) {
         console.error('Error Details:', {
@@ -253,10 +267,28 @@ useEffect(() => {
           code: error instanceof FirebaseError ? error.code : 'Unknown',
           message: error instanceof Error ? error.message : 'Unknown error',
           stack: error instanceof Error ? error.stack : 'No stack trace',
-          raw: JSON.stringify(error)
+          raw: error
         });
         
-        alert('There was an error processing your order. The payment was successful, but there was an error saving the order details. Please save your PayPal confirmation and contact support.');
+        // Save error details to a separate collection for debugging
+        try {
+          const errorRef = collection(db, 'order-errors');
+          await addDoc(errorRef, {
+            timestamp: new Date().toISOString(),
+            paypalOrderId: data.orderID,
+            error: error instanceof Error ? {
+              message: error.message,
+              stack: error.stack,
+              name: error.name
+            } : 'Unknown error',
+            customerInfo,
+            cartItems
+          });
+        } catch (errorLogError) {
+          console.error('Failed to log error:', errorLogError);
+        }
+        
+        alert('There was an error processing your order. Please save this PayPal Transaction ID: ' + data.orderID + ' and contact support. Your payment was successful but there was an error saving the order details.');
       } finally {
         setIsProcessing(false);
       }
@@ -265,14 +297,9 @@ useEffect(() => {
 
   buttons.render(container);
 
-  // Cleanup function
   return () => {
-    try {
-      if (container) {
-        container.innerHTML = '';
-      }
-    } catch (err) {
-      console.error('Error cleaning up PayPal buttons:', err);
+    if (container) {
+      container.innerHTML = '';
     }
   };
 }, [cartItems, totalItems, totalPrice, formComplete, customerInfo]);
