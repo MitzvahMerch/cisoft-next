@@ -169,24 +169,7 @@ useEffect(() => {
     
         const details = await actions.order.capture();
         console.log('2. PayPal capture successful:', details);
-
-        // Create a backup of the order first
-        const backupRef = collection(db, 'order-backups');
-        const backupData = {
-          timestamp: new Date().toISOString(),
-          paypalDetails: details,
-          orderData: {
-            customerInfo,
-            items: cartItems,
-            totalPrice,
-            totalItems
-          }
-        };
-        
-        await addDoc(backupRef, backupData);
-        console.log('Backup created successfully');
     
-        // Prepare order data with more specific typing
         const orderData = {
           customerInfo,
           items: cartItems.map(item => ({
@@ -199,7 +182,7 @@ useEffect(() => {
             itemTotal: item.price * item.sizes.reduce((sum, size) => sum + size.quantity, 0)
           })),
           orderSummary: {
-            totalAmount: Number(totalPrice.toFixed(2)), // Ensure it's a number
+            totalAmount: Number(totalPrice.toFixed(2)),
             totalItems,
             currency: 'USD'
           },
@@ -215,25 +198,14 @@ useEffect(() => {
           updatedAt: new Date().toISOString()
         };
     
-        console.log('3. Order data prepared:', orderData);
-        
-        // Try to write the order using a batch
-        const batch = writeBatch(db);
-        
-        // Create a new document reference
+        // Direct write to dcdc-orders
         const ordersRef = collection(db, 'dcdc-orders');
-        const newOrderRef = doc(ordersRef);
-        
-        // Set the order data
-        batch.set(newOrderRef, orderData);
-        
-        // Commit the batch
-        await batch.commit();
-        console.log('10. Order successfully saved with ID:', newOrderRef.id);
+        const docRef = await addDoc(ordersRef, orderData);
+        console.log('Order saved with ID:', docRef.id);
     
-        // Continue with email sending...
+        // Send confirmation email
         try {
-          const emailResponse = await fetch('/api/send-order-confirmation', {
+          await fetch('/api/send-order-confirmation', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -242,16 +214,10 @@ useEffect(() => {
               orderDetails: orderData,
               customerInfo,
               cartItems,
-              orderId: newOrderRef.id,
+              orderId: docRef.id,
               totalPrice
             }),
           });
-    
-          if (!emailResponse.ok) {
-            console.error('Failed to send confirmation email');
-          } else {
-            console.log('12. Confirmation email sent');
-          }
         } catch (emailError) {
           console.error('Error sending confirmation email:', emailError);
         }
@@ -259,7 +225,7 @@ useEffect(() => {
         // Clear cart and show success
         localStorage.removeItem('cart');
         setCartItems([]);
-        alert(`Thank you for your order! Your order ID is: ${newOrderRef.id}. A confirmation email will be sent to ${customerInfo.email}`);
+        alert(`Thank you for your order! Your order ID is: ${docRef.id}`);
     
       } catch (error) {
         console.error('Error Details:', {
@@ -269,24 +235,6 @@ useEffect(() => {
           stack: error instanceof Error ? error.stack : 'No stack trace',
           raw: error
         });
-        
-        // Save error details to a separate collection for debugging
-        try {
-          const errorRef = collection(db, 'order-errors');
-          await addDoc(errorRef, {
-            timestamp: new Date().toISOString(),
-            paypalOrderId: data.orderID,
-            error: error instanceof Error ? {
-              message: error.message,
-              stack: error.stack,
-              name: error.name
-            } : 'Unknown error',
-            customerInfo,
-            cartItems
-          });
-        } catch (errorLogError) {
-          console.error('Failed to log error:', errorLogError);
-        }
         
         alert('There was an error processing your order. Please save this PayPal Transaction ID: ' + data.orderID + ' and contact support. Your payment was successful but there was an error saving the order details.');
       } finally {
