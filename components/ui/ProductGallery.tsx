@@ -26,22 +26,15 @@ interface Product {
 const ProductGallery = () => {
   const [showHoodieBack, setShowHoodieBack] = useState(false);
   const [timeLeft, setTimeLeft] = useState({
-    days: 14,
+    days: 0,
     hours: 0,
     minutes: 0
   });
 
-
   useEffect(() => {
     const calculateTimeLeft = () => {
-      // Get tonight at midnight
-      const tonight = new Date();
-      tonight.setHours(24, 0, 0, 0);
-      
-      // Set end date to 14 days from tonight at midnight
-      const endDate = new Date(tonight);
-      endDate.setDate(endDate.getDate() + 14);
-
+      // Set a fixed end date - 14 days from November 7, 2024
+      const endDate = new Date('2024-11-21T23:59:59');
       const now = new Date();
       const difference = endDate.getTime() - now.getTime();
 
