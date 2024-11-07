@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { X } from 'lucide-react';
 import Link from 'next/link';
-import { collection, addDoc, writeBatch, doc } from 'firebase/firestore';
+import { collection, addDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { FirebaseError } from 'firebase/app';
 
